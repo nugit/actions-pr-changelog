@@ -18,7 +18,7 @@ async function run () {
       pull_number: number,
     });
     
-    console.log(commits)
+    console.log(...commits.data[0])
     core.info(`Yah`);
   } catch (error) {
     core.setFailed(error.message);
