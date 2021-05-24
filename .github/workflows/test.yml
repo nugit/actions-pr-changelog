@@ -9,6 +9,6 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: nugit/actions-pr-changelog@v0.7
+      - uses: nugit/actions-pr-changelog@v0.8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
