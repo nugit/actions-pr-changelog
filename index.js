@@ -1,8 +1,6 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 
-console.log(github.context);
-
 // exit early
 if (!['pull_request_target', 'pull_request'].includes(github.context.eventName)) {
   core.setFailed('action triggered outside of a pull_request')
@@ -10,7 +8,9 @@ if (!['pull_request_target', 'pull_request'].includes(github.context.eventName))
 }
 
 try {
-  console.log(`Yah`);
+  const { repo, payload: { number } } = github.context;
+  console.log(repo, number)
+  core.info(`Yah`);
 } catch (error) {
   core.setFailed(error.message);
 }
