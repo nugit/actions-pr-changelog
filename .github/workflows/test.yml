@@ -9,4 +9,4 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: nugit/actions-pr-changelog@v0.3
+      - uses: nugit/actions-pr-changelog@v0.4
