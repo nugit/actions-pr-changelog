@@ -10,7 +10,7 @@ async function run () {
   
   try {
     const { repo, payload: { number } } = github.context;
-    const commits = await octokit.rest.pulls.listCommits({
+    const commits = await github.rest.pulls.listCommits({
       ...repo,
       pull_number: number,
     });
