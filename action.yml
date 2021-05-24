@@ -1,8 +1,8 @@
 name: 'PR Changelog'
 description: 'Update PR changelog'
 inputs:
-  GITHUB_TOKEN:
-    description: 'GITHUB_TOKEN'
+  token:
+    description: 'github token'
     required: true
 runs:
   using: 'node12'
