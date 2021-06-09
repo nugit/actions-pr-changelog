@@ -1,5 +1,7 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
+const cp = require('child_process');
+const { getMergeCommits } = require('./lib/mergeCommits');
 
 async function run () {
   // exit early
@@ -13,12 +15,14 @@ async function run () {
     const token = core.getInput('token');
     const octokit = github.getOctokit(token);
 
-    const commits = await octokit.rest.pulls.listCommits({
-      ...repo,
-      pull_number: number,
-    });
+    const mergeCommits = getMergeCommits('master', 'develop');
+
+    // const commits = await octokit.rest.pulls.listCommits({
+    //   ...repo,
+    //   pull_number: number,
+    // });
     
-    console.log(...commits.data)
+    // console.log(...commits.data)
     core.info(`Yah`);
   } catch (error) {
     core.setFailed(error.message);
