@@ -1,10 +1,9 @@
 const { octokit } = require("./octokit");
-const { getPullRequest } = require("../lib/getPullRequest");
+const { findPullRequest, getPullRequestCommits } = require("../lib/getPullRequest");
 
 async function test() {
-  console.log(
-    await getPullRequest(octokit, "nugit/nugit-visualization", "0559c0fa0")
-  );
+  const pr =  await findPullRequest(octokit, "nugit/nugit-visualization", "0559c0fa0");
+  console.log('pr', pr);
 }
 
 test();

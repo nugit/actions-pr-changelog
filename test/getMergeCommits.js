@@ -1,3 +1,5 @@
 const { getMergeCommits } = require('../lib/mergeCommits');
 
-getMergeCommits('master', 'develop');
+const commits = getMergeCommits('master', 'develop');
+
+console.log(commits);
