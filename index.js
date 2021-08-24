@@ -1,5 +1,6 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
+const { updateReleasePR } = require('./lib/pr');
 
 async function run () {
   // exit early
@@ -13,13 +14,17 @@ async function run () {
     const token = core.getInput('token');
     const octokit = github.getOctokit(token);
 
-    const commits = await octokit.rest.pulls.listCommits({
-      ...repo,
-      pull_number: number,
-    });
-    
-    console.log(...commits.data)
-    core.info(`Yah`);
+    const type = core.getInput('type', { required: true });
+    switch(type) {
+      case 'release':
+        await updateReleasePR(octokit, owner, repo, prNumber);
+        break;
+      case 'onprem':
+        core.setFailed('Not supported yet');
+        break;
+      default:
+        core.setFailed('Invalid type input');
+    }
   } catch (error) {
     core.setFailed(error.message);
   }

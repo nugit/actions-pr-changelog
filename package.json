@@ -19,6 +19,7 @@
   "homepage": "https://github.com/nugit/actions-pr-changelog#readme",
   "dependencies": {
     "@actions/core": "^1.3.0",
-    "@actions/github": "^5.0.0"
+    "@actions/github": "^5.0.0",
+    "dotenv": "^10.0.0"
   }
 }
