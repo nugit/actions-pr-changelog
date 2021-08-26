@@ -3,6 +3,8 @@ const github = require('@actions/github');
 const { updateReleasePR } = require('./lib/pr');
 
 async function run () {
+  console.log(github.context);
+
   // exit early
   if (!['pull_request_target', 'pull_request'].includes(github.context.eventName)) {
     core.setFailed('action triggered outside of a pull_request')
@@ -17,7 +19,7 @@ async function run () {
     const type = core.getInput('type', { required: true });
     switch(type) {
       case 'release':
-        await updateReleasePR(octokit, owner, repo, prNumber);
+        await updateReleasePR(octokit, owner, repo, number);
         break;
       case 'onprem':
         core.setFailed('Not supported yet');
