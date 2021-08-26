@@ -27,7 +27,7 @@ async function run () {
         core.setFailed('Invalid type input');
     }
   } catch (error) {
-    core.setFailed(error.toString());
+    core.setFailed(`Err ${err.message} at ${err.stack}`);
   }
 }
 
