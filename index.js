@@ -8,16 +8,17 @@ async function run () {
     core.setFailed('action triggered outside of a pull_request')
     process.exit(1)
   }
+  core.debug(`github.context: ${JSON.stringify(github.context, null, 2)}`);
   
   try {
-    const { repo, payload: { number } } = github.context;
+    const { payload: { number, repository: { name, owner: { login }} } } = github.context;
     const token = core.getInput('token');
     const octokit = github.getOctokit(token);
 
     const type = core.getInput('type', { required: true });
     switch(type) {
       case 'release':
-        await updateReleasePR(octokit, owner, repo, prNumber);
+        await updateReleasePR(octokit, login, name, number);
         break;
       case 'onprem':
         core.setFailed('Not supported yet');
@@ -26,7 +27,7 @@ async function run () {
         core.setFailed('Invalid type input');
     }
   } catch (error) {
-    core.setFailed(error.message);
+    core.setFailed(`Err ${err.message} at ${err.stack}`);
   }
 }
 
