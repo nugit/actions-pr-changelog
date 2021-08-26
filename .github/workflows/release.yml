@@ -6,7 +6,7 @@ name: Release
 on: 
   pull_request:
     types: [opened, edited, synchronize]
-    branches: [master]
+    branches: [master, develop]
 
 jobs:
   release:
