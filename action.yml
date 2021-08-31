@@ -1,13 +1,12 @@
-name: 'Hello World'
-description: 'Greet someone and record the time'
+name: 'PR Changelog'
+description: 'Update PR changelog'
 inputs:
-  who-to-greet:  # id of input
-    description: 'Who to greet'
+  token:
+    description: 'github token'
     required: true
-    default: 'World'
-outputs:
-  time: # id of output
-    description: 'The time we greeted you'
+  type:
+    description: 'bot type: release or onprem'
+    required: true
 runs:
   using: 'node12'
   main: 'index.js'
