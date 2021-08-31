@@ -5,10 +5,15 @@ const { updateReleasePR } = require('./lib/pr');
 async function run () {
   // exit early
   if (!['pull_request_target', 'pull_request'].includes(github.context.eventName)) {
-    core.setFailed('action triggered outside of a pull_request')
+    core.setFailed('action triggered outside of a pull_request');
     process.exit(1)
   }
-  core.debug(`github.context: ${JSON.stringify(github.context, null, 2)}`);
+
+  if (core.isDebug()) {
+    core.startGroup('github.context:');
+    core.debug(JSON.stringify(github.context, null, 2));
+    core.endGroup();
+  }
   
   try {
     const { payload: { number, repository: { name, owner: { login }} } } = github.context;
@@ -26,7 +31,7 @@ async function run () {
       default:
         core.setFailed('Invalid type input');
     }
-  } catch (error) {
+  } catch (err) {
     core.setFailed(`Err ${err.message} at ${err.stack}`);
   }
 }
