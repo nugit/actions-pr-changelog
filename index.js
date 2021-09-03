@@ -1,6 +1,6 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
-const { updateReleasePR } = require('./lib/pr');
+const { updateReleasePR, updateOnPremPR } = require('./lib/pr');
 
 async function run () {
   // exit early
@@ -26,7 +26,7 @@ async function run () {
         await updateReleasePR(octokit, login, name, number);
         break;
       case 'onprem':
-        core.setFailed('Not supported yet');
+        await updateOnPremPR(octokit, login, name, number);
         break;
       default:
         core.setFailed('Invalid type input');
