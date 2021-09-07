@@ -1,4 +1,4 @@
-const { updateReleasePR } = require("../lib/pr");
+const { updateReleasePR, updateOnPremPR } = require("../lib/pr");
 const { octokit } = require("./octokit");
 
 async function testUpdateReleasePR() {
@@ -10,3 +10,13 @@ async function testUpdateReleasePR() {
 }
 
 testUpdateReleasePR();
+
+async function testUpdateOnPremPR() {
+  const owner = "nugit";
+  const repo = "nugit-visualization";
+  const prNumber = 2623;
+
+  await updateOnPremPR(octokit, owner, repo, prNumber);
+}
+
+testUpdateOnPremPR();
