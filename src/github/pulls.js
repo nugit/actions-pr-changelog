@@ -115,7 +115,7 @@ async function createPullRequest(octokit, owner, repo, head, base, title, review
     owner,
     repo,
     pull_number: newPull.data.number,
-    reviewers: await getReviewers(octokit, owner, reviewers),
+    reviewers,
   });
 
   core.info('Reviews requested');
