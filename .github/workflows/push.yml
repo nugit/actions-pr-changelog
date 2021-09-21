@@ -16,8 +16,8 @@ jobs:
       - uses: actions/setup-node@v2.4.0
         with:
           node-version: '14'
-          cache: 'yarn'
+          cache: 'npm'
       - run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
-      - run: yarn install
-      - run: yarn lint
-      - run: yarn build
+      - run: npm install
+      - run: npm run lint
+      - run: npm run build
