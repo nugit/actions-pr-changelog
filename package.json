@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install $PWD/.husky",
-    "build": "ncc build src/index.js -o dist --license licenses.txt",
+    "build:changelog": "ncc build src/actions/changelogAction.js -o dist/changelogAction --license licenses.txt",
+    "build:createRelease": "ncc build src/actions/createReleaseAction.js -o dist/createRelease --license licenses.txt",
+    "build": "npm run build:changelog && npm run build:createRelease",
     "prepack": "npm run build",
     "lint": "eslint --cache . --ext .js,.jsx,.flow",
     "deploy": "semantic-release"

@@ -1,3 +1,6 @@
+const core = require('@actions/core');
+const { getReviewers } = require('./teams');
+
 async function getPullRequest(octokit, owner, repo, prNumber) {
   const result = await octokit.rest.pulls.get({
     owner,
@@ -67,9 +70,61 @@ async function getPullRequestCommits(octokit, repo, prNumber) {
   return result.data;
 }
 
+async function findOpenPullRequests(octokit, owner, repo, head, base) {
+  const result = await octokit.rest.pulls.list({
+    owner,
+    repo,
+    head,
+    base,
+  });
+
+  return result.data[0] ?? null;
+}
+
+async function createPullRequest(octokit, owner, repo, head, base, title, reviewers) {
+  const pull = await findOpenPullRequests(octokit, owner, repo, head, base);
+
+  if (pull !== null) {
+    core.info('Pull request already exists');
+    return;
+  }
+
+  const compare = await octokit.rest.repos.compareCommitsWithBasehead({
+    owner,
+    repo,
+    basehead: `${base}...${head}`,
+  });
+
+  if (compare.data.ahead_by === 0) {
+    core.info('No changes');
+    return;
+  }
+
+  const newPull = await octokit.rest.pulls.create({
+    owner,
+    repo,
+    head,
+    base,
+    title,
+    draft: true,
+  });
+
+  core.info('Pull request created');
+
+  await octokit.rest.pulls.requestReviewers({
+    owner,
+    repo,
+    pull_number: newPull.data.number,
+    reviewers: await getReviewers(octokit, owner, reviewers),
+  });
+
+  core.info('Reviews requested');
+}
+
 module.exports = {
   findPullRequest,
   getPullRequest,
   getPullRequestCommits,
   findPullRequestFrom,
+  createPullRequest,
 };
