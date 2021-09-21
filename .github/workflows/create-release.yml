@@ -6,7 +6,7 @@ name: Create Release
 on: 
   push:
     branches:
-      - feat/refactor
+      - feat/release-pr
 
 jobs:
   release:
@@ -16,7 +16,7 @@ jobs:
       - uses: './createReleaseAction'
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          head: feat/refactor
+          head: feat/release-pr
           base: master
           title: Testing create PR
           reviewers: '@nugit/front-devs,team-engineering-x'
