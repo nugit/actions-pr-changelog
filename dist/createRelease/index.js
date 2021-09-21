@@ -6073,7 +6073,7 @@ async function findOpenPullRequests(octokit, owner, repo, head, base) {
     base,
   });
 
-  return result.data[0] ?? null;
+  return result.data[0] || null;
 }
 
 async function createPullRequest(octokit, owner, repo, head, base, title, reviewers) {
