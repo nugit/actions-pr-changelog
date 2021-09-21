@@ -4,9 +4,8 @@
 name: Create Release
 
 on: 
-  push:
-    branches:
-      - feat/release-pr
+  schedule:
+    - cron:  '* * 1 * *'
 
 jobs:
   release:
@@ -16,7 +15,7 @@ jobs:
       - uses: './createReleaseAction'
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          head: feat/release-pr
+          head: develop
           base: master
-          title: Testing create PR
-          reviewers: '@nugit/front-devs,team-engineering-x'
+          title: Next Release
+          reviewers: 'moroine,limtingzhi,tuannugit'

@@ -1,5 +1,4 @@
 const core = require('@actions/core');
-const { getReviewers } = require('./teams');
 
 async function getPullRequest(octokit, owner, repo, prNumber) {
   const result = await octokit.rest.pulls.get({
