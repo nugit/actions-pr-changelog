@@ -22,7 +22,6 @@ jobs:
           node-version: '14'
           cache: 'npm'
       - run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
-      - run: cp packages/api/.env.sample packages/api/.env
       - run: npm install
       - run: npm run lint
       - run: npm run build
