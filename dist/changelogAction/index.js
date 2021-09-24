@@ -1,499 +1,7 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 138:
-/***/ ((module) => {
-
-async function getPullRequest(octokit, owner, repo, prNumber) {
-  const result = await octokit.rest.pulls.get({
-    owner,
-    repo,
-    pull_number: prNumber,
-  });
-
-  return result.data;
-}
-
-async function findPullRequest(octokit, repo, mergeCommit) {
-  const result = await octokit.rest.search.issuesAndPullRequests({
-    q: `${mergeCommit}+repo:${repo}+state:closed`,
-  });
-
-  if (result.data.total_count !== 1) {
-    throw new Error(
-      "Unexpected findPullRequest result length, got " + result.total_count
-    );
-  }
-
-  return getPullRequest(octokit, repo, result.data.items[0].number);
-}
-
-async function findPullRequestFrom(octokit, owner, repo, from) {
-  const q = `repo:${owner}/${repo}+merged:>${from}`;
-  const pageSize = 100;
-  const result = await octokit.rest.search.issuesAndPullRequests({
-    q,
-    per_page: pageSize,
-  });
-
-  const {
-    data: { total_count, items },
-  } = result;
-
-  const pageCount = Math.ceil(total_count / pageSize);
-  const pages = [items];
-  for (let i = 2; i < pageCount; i+=1) {
-    pages.push(
-      octokit.rest.search
-        .issuesAndPullRequests({
-          q,
-          per_page: pageSize,
-          page: i,
-        })
-        .then((d) => d.data.items)
-    );
-  }
-
-  const data = await Promise.all(pages);
-
-  const prs = await Promise.all(
-    data.flat().map(item => getPullRequest(octokit, owner, repo, item.number))
-  );
-
-  return prs;
-}
-
-async function getPullRequestCommits(octokit, repo, prNumber) {
-  const result = await octokit.rest.pulls.listCommits({
-    owner: repo.split("/")[0],
-    repo: repo.split("/")[1],
-    pull_number: prNumber,
-  });
-
-  return result.data;
-}
-
-module.exports = {
-  findPullRequest,
-  getPullRequest,
-  getPullRequestCommits,
-  findPullRequestFrom,
-};
-
-
-/***/ }),
-
-/***/ 200:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-const cp = __nccwpck_require__(129);
-const core = __nccwpck_require__(186);
-
-async function getCommit(octokit, owner, repo, sha) {
-  const result = await octokit.rest.git.getCommit({
-    owner,
-    repo,
-    commit_sha: sha,
-  });
-
-  return result.data;
-}
-
-async function getFirstCommit(octokit, owner, repo, base, head) {
-  const result = await octokit.rest.repos.compareCommitsWithBasehead({
-    owner,
-    repo,
-    basehead: `${base}...${head}`, 
-    page: 1,
-    per_page: 1,
-  });
-
-  return result.data.commits[0];
-}
-
-function getMergeCommits(base, branch) {
-  if (core.isDebug()) {
-    core.startGroup('getMergeCommits');
-  }
-
-  cp.execSync(`git fetch --all`);
-
-  const cmd = `git log ${base}...${branch} --merges --first-parent --oneline --right-only --format=%H`;
-  const output = cp.execSync(cmd);
-
-  core.debug(`Executing command: ${cmd}`);
-  core.debug(`Got output:\n${output}`);
-
-  const commits = output
-    .toString()
-    .split("\n")
-    .map(s => s.trim())
-    .filter(Boolean)
-
-  if (core.isDebug()) {
-    core.endGroup();
-  }
-
-  return new Set(commits);
-}
-
-module.exports = {
-  getMergeCommits,
-  getFirstCommit,
-  getCommit,
-};
-
-
-/***/ }),
-
-/***/ 515:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-const { getPullRequest, findPullRequestFrom } = __nccwpck_require__(138);
-const { getFirstCommit, getMergeCommits } = __nccwpck_require__(200);
-const core = __nccwpck_require__(186);
-
-const MARKER = "=== DO NOT EDIT BELOW THIS LINE ===";
-
-const emptyLineRegex = /^\s*$/;
-
-function trimEmptyLines(body) {
-  const result = [];
-  let isPreviousEmpty = true;
-
-  for (let i = 0; i < body.length; i++) {
-    const isEmpty = emptyLineRegex.test(body[i]);
-    if (!isEmpty) {
-      result.push(body[i]);
-    } else if (!isPreviousEmpty) {
-      result.push('');
-    }
-    isPreviousEmpty = isEmpty;
-  }
-
-  return result;
-}
-
-function getPrType(pr) {
-  if (pr.base.ref === "develop") {
-    return pr.labels.some((l) => l.name === "dependencies") ? "deps" : "feat";
-  }
-
-  if (pr.labels.some((l) => l.name === "release")) {
-    return 'release';
-  }
-
-  if (pr.base.ref === "onprem-master") {
-    return "onprem";
-  }
-
-  return "unknown";
-}
-
-function findJiraTicket(prs) {
-  const lines = prs.flatMap((pr) => {
-    return pr.body ? pr.body.split(`\n`) : [];
-  });
-  const linesMap = new Map(
-    lines
-      .filter((line) => line.includes("atlassian.net"))
-      .map((line) => {
-        const match = line.match(
-          /https:\/\/nugitco.atlassian.net\/browse\/(\w+-\w+)/
-        );
-        return [match[1], line];
-      })
-  );
-
-  return Array.from(linesMap.values());
-}
-
-function findPrChangelog(pr) {
-  const [,changes = null] = pr.body.split(MARKER);
-
-  const lines = [
-    `## ${pr.title} #${pr.number}`,
-  ]
-
-  if (changes === null) {
-    core.error(`Changelog not found on ${pr.number}`);
-    lines.push(pr.body);
-  } else {
-    lines.push(changes);
-  }
-
-  lines.push(`\n`);
-
-  return lines.join('\n');
-}
-
-function getReleaseChangelog(subPrs) {
-  const [prs, depsPRs] = subPrs.reduce(
-    (acc, p) => {
-      if (getPrType(p) === "deps") {
-        acc[1].push(p);
-      } else {
-        acc[0].push(p);
-      }
-
-      return acc;
-    },
-    [[], []]
-  );
-
-  const tickets = findJiraTicket(subPrs);
-
-  if (core.isDebug()) {
-    core.startGroup('main-PRs:');
-    core.debug(JSON.stringify(prs, null, 2));
-    core.endGroup();
-  }
-
-  if (core.isDebug()) {
-    core.startGroup('deps-PRs:');
-    core.debug(JSON.stringify(depsPRs, null, 2));
-    core.endGroup();
-  }
-
-  const changelog = [
-    "\n**JIRA Tickets:**",
-    tickets.length > 0 ? "" : "- N/A",
-    ...tickets,
-    prs.length > 0 ? "\n**PRs:**" : "",
-    ...prs.map((p) => `- ${p.title} #${p.number}`),
-    depsPRs.length > 0 ? "\n**Dependabot PRs:**" : "",
-    ...depsPRs.map((p) => `- ${p.title} #${p.number}`),
-  ].filter(Boolean);
-
-  return changelog;
-}
-
-function getOnPremChangelog(subPrs) {
-  const [releasePrs, otherPrs] = subPrs.reduce(
-    (acc, p) => {
-      if (getPrType(p) === "release") {
-        acc[0].push(p);
-      } else {
-        acc[1].push(p);
-      }
-
-      return acc;
-    },
-    [[], []]
-  );
-
-  if (otherPrs.length > 0) {
-    core.warning(`Found ${otherPrs.length} non-release PRs: ${otherPrs.map(p => p.number).join(', ')}`);
-  }
-
-  if (core.isDebug()) {
-    core.startGroup('release-PRs:');
-    core.debug(JSON.stringify(releasePrs, null, 2));
-    core.endGroup();
-  }
-
-  if (core.isDebug()) {
-    core.startGroup('other-PRs:');
-    core.debug(JSON.stringify(otherPrs, null, 2));
-    core.endGroup();
-  }
-
-  return subPrs.map(p => findPrChangelog(p));
-}
-
-async function updateReleasePR(octokit, owner, repo, prNumber) {
-  const pr = await getPullRequest(octokit, owner, repo, prNumber);
-
-  const firstCommit = await getFirstCommit(
-    octokit,
-    owner,
-    repo,
-    pr.base.sha,
-    pr.head.sha
-  );
-
-  if (core.isDebug()) {
-    core.startGroup('first commit:');
-    core.debug(JSON.stringify(firstCommit, null, 2));
-    core.endGroup();
-  }
-
-  const possiblePrs = await findPullRequestFrom(
-    octokit,
-    owner,
-    repo,
-    firstCommit.commit.committer.date
-  );
-
-  if (core.isDebug()) {
-    core.startGroup('possible PRs:');
-    core.debug(JSON.stringify(possiblePrs, null, 2));
-    core.endGroup();
-  }
-
-  const mergeCommits = await getMergeCommits(pr.base.sha, pr.head.sha);
-
-  if (core.isDebug()) {
-    core.startGroup('merge commits:');
-    core.debug(JSON.stringify(Array.from(mergeCommits), null, 2));
-    core.endGroup();
-  }
-
-  const subPrs = possiblePrs.filter((pr) => {
-    return mergeCommits.has(pr.merge_commit_sha);
-  });
-
-  if (core.isDebug()) {
-    core.startGroup('sub-PRs:');
-    core.debug(JSON.stringify(subPrs, null, 2));
-    core.endGroup();
-  }
-
-  const changelog = getReleaseChangelog(subPrs);
-  const lines = pr.body ? pr.body.split(`\n`) : [];
-  const body = [];
-  for (let i = 0; i < lines.length; i++) {
-    if (lines[i].includes(MARKER)) {
-      break;
-    }
-    body.push(lines[i]);
-  }
-  body.push('\n', MARKER);
-  body.push(...changelog);
-
-  core.info('Updating changelog');
-
-  await octokit.rest.pulls.update({
-    owner,
-    repo,
-    pull_number: pr.number,
-    body: trimEmptyLines(body).join('\n'),
-  });
-
-  if (!pr.labels.some((l) => l.name === "release")) {
-    core.info('Adding release label');
-    await octokit.rest.issues.addLabels({
-      owner,
-      repo,
-      issue_number: pr.number,
-      labels: ["release"],
-    });
-  }
-
-  return body;
-};
-
-async function updateOnPremPR(octokit, owner, repo, prNumber) {
-  const pr = await getPullRequest(octokit, owner, repo, prNumber);
-
-  const firstCommit = await getFirstCommit(
-    octokit,
-    owner,
-    repo,
-    pr.base.sha,
-    pr.head.sha
-  );
-
-  if (core.isDebug()) {
-    core.startGroup('first commit:');
-    core.debug(JSON.stringify(firstCommit, null, 2));
-    core.endGroup();
-  }
-
-  const possiblePrs = await findPullRequestFrom(
-    octokit,
-    owner,
-    repo,
-    firstCommit.commit.committer.date
-  );
-
-  if (core.isDebug()) {
-    core.startGroup('possible PRs:');
-    core.debug(JSON.stringify(possiblePrs, null, 2));
-    core.endGroup();
-  }
-
-  const mergeCommits = await getMergeCommits(pr.base.sha, pr.head.sha);
-
-  if (core.isDebug()) {
-    core.startGroup('merge commits:');
-    core.debug(JSON.stringify(Array.from(mergeCommits), null, 2));
-    core.endGroup();
-  }
-
-  const possiblePrsByMergeCommit = possiblePrs.reduce((acc, pr) => {
-    acc.set(pr.merge_commit_sha, pr);
-    return acc;
-  }, new Map());
-
-  const subPrs = Array.from(mergeCommits).reduce((acc, c) => {
-    if (possiblePrsByMergeCommit.has(c)) {
-      acc.push(possiblePrsByMergeCommit.get(c));
-    } else {
-      core.warning(`No Pr found for merge-commit ${c}`);
-    }
-
-    return acc;
-  }, []);
-
-  if (core.isDebug()) {
-    core.startGroup('sub-PRs:');
-    core.debug(JSON.stringify(subPrs, null, 2));
-    core.endGroup();
-  }
-
-  const changelog = getOnPremChangelog(subPrs);
-  const lines = pr.body ? pr.body.split(`\n`) : [];
-  const body = [];
-  for (let i = 0; i < lines.length; i++) {
-    if (lines[i].includes(MARKER)) {
-      break;
-    }
-    body.push(lines[i]);
-  }
-  if (body[body.length - 1] !== `\n`) {
-    body.push('\n');
-  }
-  body.push(MARKER, ...changelog);
-
-  core.info('Updating release changelog');
-  if (core.isDebug()) {
-    core.startGroup('changelog:');
-    core.debug(JSON.stringify(changelog, null, 2));
-    core.endGroup();
-  }
-
-  await octokit.rest.pulls.update({
-    owner,
-    repo,
-    pull_number: pr.number,
-    body: trimEmptyLines(body).join('\n'),
-  });
-
-  if (!pr.labels.some((l) => l.name === "onprem")) {
-    core.info('Adding onprem label');
-    await octokit.rest.issues.addLabels({
-      owner,
-      repo,
-      issue_number: pr.number,
-      labels: ["onprem"],
-    });
-  }
-
-  return body;
-};
-
-module.exports = {
-  getPrType,
-  getReleaseChangelog,
-  updateReleasePR,
-  updateOnPremPR,
-};
-
-
-/***/ }),
-
-/***/ 351:
+/***/ 7351:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -519,8 +27,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.issue = exports.issueCommand = void 0;
-const os = __importStar(__nccwpck_require__(87));
-const utils_1 = __nccwpck_require__(278);
+const os = __importStar(__nccwpck_require__(2087));
+const utils_1 = __nccwpck_require__(5278);
 /**
  * Commands
  *
@@ -592,7 +100,7 @@ function escapeProperty(s) {
 
 /***/ }),
 
-/***/ 186:
+/***/ 2186:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -627,11 +135,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getState = exports.saveState = exports.group = exports.endGroup = exports.startGroup = exports.info = exports.warning = exports.error = exports.debug = exports.isDebug = exports.setFailed = exports.setCommandEcho = exports.setOutput = exports.getBooleanInput = exports.getInput = exports.addPath = exports.setSecret = exports.exportVariable = exports.ExitCode = void 0;
-const command_1 = __nccwpck_require__(351);
+const command_1 = __nccwpck_require__(7351);
 const file_command_1 = __nccwpck_require__(717);
-const utils_1 = __nccwpck_require__(278);
-const os = __importStar(__nccwpck_require__(87));
-const path = __importStar(__nccwpck_require__(622));
+const utils_1 = __nccwpck_require__(5278);
+const os = __importStar(__nccwpck_require__(2087));
+const path = __importStar(__nccwpck_require__(5622));
 /**
  * The code to exit an action
  */
@@ -907,9 +415,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.issueCommand = void 0;
 // We use any as a valid input type
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const fs = __importStar(__nccwpck_require__(747));
-const os = __importStar(__nccwpck_require__(87));
-const utils_1 = __nccwpck_require__(278);
+const fs = __importStar(__nccwpck_require__(5747));
+const os = __importStar(__nccwpck_require__(2087));
+const utils_1 = __nccwpck_require__(5278);
 function issueCommand(command, message) {
     const filePath = process.env[`GITHUB_${command}`];
     if (!filePath) {
@@ -927,7 +435,7 @@ exports.issueCommand = issueCommand;
 
 /***/ }),
 
-/***/ 278:
+/***/ 5278:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -954,15 +462,15 @@ exports.toCommandValue = toCommandValue;
 
 /***/ }),
 
-/***/ 53:
+/***/ 4087:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Context = void 0;
-const fs_1 = __nccwpck_require__(747);
-const os_1 = __nccwpck_require__(87);
+const fs_1 = __nccwpck_require__(5747);
+const os_1 = __nccwpck_require__(2087);
 class Context {
     /**
      * Hydrate the context from the environment
@@ -1015,7 +523,7 @@ exports.Context = Context;
 
 /***/ }),
 
-/***/ 438:
+/***/ 5438:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -1041,8 +549,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getOctokit = exports.context = void 0;
-const Context = __importStar(__nccwpck_require__(53));
-const utils_1 = __nccwpck_require__(30);
+const Context = __importStar(__nccwpck_require__(4087));
+const utils_1 = __nccwpck_require__(3030);
 exports.context = new Context.Context();
 /**
  * Returns a hydrated octokit ready to use for GitHub Actions
@@ -1058,7 +566,7 @@ exports.getOctokit = getOctokit;
 
 /***/ }),
 
-/***/ 914:
+/***/ 7914:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -1084,7 +592,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getApiBaseUrl = exports.getProxyAgent = exports.getAuthString = void 0;
-const httpClient = __importStar(__nccwpck_require__(925));
+const httpClient = __importStar(__nccwpck_require__(9925));
 function getAuthString(token, options) {
     if (!token && !options.auth) {
         throw new Error('Parameter token or opts.auth is required');
@@ -1108,7 +616,7 @@ exports.getApiBaseUrl = getApiBaseUrl;
 
 /***/ }),
 
-/***/ 30:
+/***/ 3030:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -1134,12 +642,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getOctokitOptions = exports.GitHub = exports.context = void 0;
-const Context = __importStar(__nccwpck_require__(53));
-const Utils = __importStar(__nccwpck_require__(914));
+const Context = __importStar(__nccwpck_require__(4087));
+const Utils = __importStar(__nccwpck_require__(7914));
 // octokit + plugins
-const core_1 = __nccwpck_require__(762);
-const plugin_rest_endpoint_methods_1 = __nccwpck_require__(44);
-const plugin_paginate_rest_1 = __nccwpck_require__(193);
+const core_1 = __nccwpck_require__(6762);
+const plugin_rest_endpoint_methods_1 = __nccwpck_require__(3044);
+const plugin_paginate_rest_1 = __nccwpck_require__(4193);
 exports.context = new Context.Context();
 const baseUrl = Utils.getApiBaseUrl();
 const defaults = {
@@ -1169,15 +677,15 @@ exports.getOctokitOptions = getOctokitOptions;
 
 /***/ }),
 
-/***/ 925:
+/***/ 9925:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const http = __nccwpck_require__(605);
-const https = __nccwpck_require__(211);
-const pm = __nccwpck_require__(443);
+const http = __nccwpck_require__(8605);
+const https = __nccwpck_require__(7211);
+const pm = __nccwpck_require__(6443);
 let tunnel;
 var HttpCodes;
 (function (HttpCodes) {
@@ -1596,7 +1104,7 @@ class HttpClient {
         if (useProxy) {
             // If using proxy, need tunnel
             if (!tunnel) {
-                tunnel = __nccwpck_require__(294);
+                tunnel = __nccwpck_require__(4294);
             }
             const agentOptions = {
                 maxSockets: maxSockets,
@@ -1714,7 +1222,7 @@ exports.HttpClient = HttpClient;
 
 /***/ }),
 
-/***/ 443:
+/***/ 6443:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -1836,7 +1344,7 @@ exports.createTokenAuth = createTokenAuth;
 
 /***/ }),
 
-/***/ 762:
+/***/ 6762:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -1844,10 +1352,10 @@ exports.createTokenAuth = createTokenAuth;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 
-var universalUserAgent = __nccwpck_require__(429);
-var beforeAfterHook = __nccwpck_require__(682);
-var request = __nccwpck_require__(234);
-var graphql = __nccwpck_require__(668);
+var universalUserAgent = __nccwpck_require__(5030);
+var beforeAfterHook = __nccwpck_require__(3682);
+var request = __nccwpck_require__(6234);
+var graphql = __nccwpck_require__(8467);
 var authToken = __nccwpck_require__(334);
 
 function _objectWithoutPropertiesLoose(source, excluded) {
@@ -2019,7 +1527,7 @@ exports.Octokit = Octokit;
 
 /***/ }),
 
-/***/ 440:
+/***/ 9440:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -2027,8 +1535,8 @@ exports.Octokit = Octokit;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 
-var isPlainObject = __nccwpck_require__(287);
-var universalUserAgent = __nccwpck_require__(429);
+var isPlainObject = __nccwpck_require__(3287);
+var universalUserAgent = __nccwpck_require__(5030);
 
 function lowercaseKeys(object) {
   if (!object) {
@@ -2417,7 +1925,7 @@ exports.endpoint = endpoint;
 
 /***/ }),
 
-/***/ 668:
+/***/ 8467:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -2425,8 +1933,8 @@ exports.endpoint = endpoint;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 
-var request = __nccwpck_require__(234);
-var universalUserAgent = __nccwpck_require__(429);
+var request = __nccwpck_require__(6234);
+var universalUserAgent = __nccwpck_require__(5030);
 
 const VERSION = "4.6.2";
 
@@ -2541,7 +2049,7 @@ exports.withCustomRequest = withCustomRequest;
 
 /***/ }),
 
-/***/ 193:
+/***/ 4193:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -2693,7 +2201,7 @@ exports.paginatingEndpoints = paginatingEndpoints;
 
 /***/ }),
 
-/***/ 44:
+/***/ 3044:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -3968,8 +3476,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
-var deprecation = __nccwpck_require__(481);
-var once = _interopDefault(__nccwpck_require__(223));
+var deprecation = __nccwpck_require__(8932);
+var once = _interopDefault(__nccwpck_require__(1223));
 
 const logOnce = once(deprecation => console.warn(deprecation));
 /**
@@ -4021,7 +3529,7 @@ exports.RequestError = RequestError;
 
 /***/ }),
 
-/***/ 234:
+/***/ 6234:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -4031,9 +3539,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
-var endpoint = __nccwpck_require__(440);
-var universalUserAgent = __nccwpck_require__(429);
-var isPlainObject = __nccwpck_require__(287);
+var endpoint = __nccwpck_require__(9440);
+var universalUserAgent = __nccwpck_require__(5030);
+var isPlainObject = __nccwpck_require__(3287);
 var nodeFetch = _interopDefault(__nccwpck_require__(467));
 var requestError = __nccwpck_require__(537);
 
@@ -4179,12 +3687,12 @@ exports.request = request;
 
 /***/ }),
 
-/***/ 682:
+/***/ 3682:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-var register = __nccwpck_require__(670)
-var addHook = __nccwpck_require__(549)
-var removeHook = __nccwpck_require__(819)
+var register = __nccwpck_require__(4670)
+var addHook = __nccwpck_require__(5549)
+var removeHook = __nccwpck_require__(6819)
 
 // bind with array of arguments: https://stackoverflow.com/a/21792913
 var bind = Function.bind
@@ -4243,7 +3751,7 @@ module.exports.Collection = Hook.Collection
 
 /***/ }),
 
-/***/ 549:
+/***/ 5549:
 /***/ ((module) => {
 
 module.exports = addHook;
@@ -4296,7 +3804,7 @@ function addHook(state, kind, name, hook) {
 
 /***/ }),
 
-/***/ 670:
+/***/ 4670:
 /***/ ((module) => {
 
 module.exports = register;
@@ -4330,7 +3838,7 @@ function register(state, name, method, options) {
 
 /***/ }),
 
-/***/ 819:
+/***/ 6819:
 /***/ ((module) => {
 
 module.exports = removeHook;
@@ -4356,7 +3864,7 @@ function removeHook(state, name, method) {
 
 /***/ }),
 
-/***/ 481:
+/***/ 8932:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -4384,7 +3892,7 @@ exports.Deprecation = Deprecation;
 
 /***/ }),
 
-/***/ 287:
+/***/ 3287:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -4440,11 +3948,11 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
-var Stream = _interopDefault(__nccwpck_require__(413));
-var http = _interopDefault(__nccwpck_require__(605));
-var Url = _interopDefault(__nccwpck_require__(835));
-var https = _interopDefault(__nccwpck_require__(211));
-var zlib = _interopDefault(__nccwpck_require__(761));
+var Stream = _interopDefault(__nccwpck_require__(2413));
+var http = _interopDefault(__nccwpck_require__(8605));
+var Url = _interopDefault(__nccwpck_require__(8835));
+var https = _interopDefault(__nccwpck_require__(7211));
+var zlib = _interopDefault(__nccwpck_require__(8761));
 
 // Based on https://github.com/tmpvar/jsdom/blob/aa85b2abf07766ff7bf5c1f6daafb3726f2f2db5/lib/jsdom/living/blob.js
 
@@ -4595,7 +4103,7 @@ FetchError.prototype.name = 'FetchError';
 
 let convert;
 try {
-	convert = __nccwpck_require__(877).convert;
+	convert = __nccwpck_require__(2877).convert;
 } catch (e) {}
 
 const INTERNALS = Symbol('Body internals');
@@ -6087,10 +5595,10 @@ exports.FetchError = FetchError;
 
 /***/ }),
 
-/***/ 223:
+/***/ 1223:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-var wrappy = __nccwpck_require__(940)
+var wrappy = __nccwpck_require__(2940)
 module.exports = wrappy(once)
 module.exports.strict = wrappy(onceStrict)
 
@@ -6136,27 +5644,27 @@ function onceStrict (fn) {
 
 /***/ }),
 
-/***/ 294:
+/***/ 4294:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-module.exports = __nccwpck_require__(219);
+module.exports = __nccwpck_require__(4219);
 
 
 /***/ }),
 
-/***/ 219:
+/***/ 4219:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var net = __nccwpck_require__(631);
-var tls = __nccwpck_require__(16);
-var http = __nccwpck_require__(605);
-var https = __nccwpck_require__(211);
-var events = __nccwpck_require__(614);
-var assert = __nccwpck_require__(357);
-var util = __nccwpck_require__(669);
+var net = __nccwpck_require__(1631);
+var tls = __nccwpck_require__(4016);
+var http = __nccwpck_require__(8605);
+var https = __nccwpck_require__(7211);
+var events = __nccwpck_require__(8614);
+var assert = __nccwpck_require__(2357);
+var util = __nccwpck_require__(1669);
 
 
 exports.httpOverHttp = httpOverHttp;
@@ -6416,7 +5924,7 @@ exports.debug = debug; // for test
 
 /***/ }),
 
-/***/ 429:
+/***/ 5030:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -6442,7 +5950,7 @@ exports.getUserAgent = getUserAgent;
 
 /***/ }),
 
-/***/ 940:
+/***/ 2940:
 /***/ ((module) => {
 
 // Returns a wrapper function that returns a wrapped callback
@@ -6482,7 +5990,602 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 877:
+/***/ 7141:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const MARKER = '=== DO NOT EDIT BELOW THIS LINE ===';
+const core = __nccwpck_require__(2186);
+
+const emptyLineRegex = /^\s*$/;
+
+function trimEmptyLines(body) {
+  const result = [];
+  let isPreviousEmpty = true;
+
+  for (let i = 0; i < body.length; i += 1) {
+    const isEmpty = emptyLineRegex.test(body[i]);
+    if (!isEmpty) {
+      result.push(body[i]);
+    } else if (!isPreviousEmpty) {
+      result.push('');
+    }
+    isPreviousEmpty = isEmpty;
+  }
+
+  return result;
+}
+
+async function addChangelog(octokit, owner, repo, pr, changelog) {
+  const lines = pr.body ? pr.body.split('\n') : [];
+  const body = [];
+
+  for (let i = 0; i < lines.length; i += 1) {
+    if (lines[i].includes(MARKER)) {
+      break;
+    }
+    body.push(lines[i]);
+  }
+  body.push('\n', MARKER);
+  body.push(...changelog);
+
+  core.info('Updating changelog');
+
+  await octokit.rest.pulls.update({
+    owner,
+    repo,
+    pull_number: pr.number,
+    body: trimEmptyLines(body).join('\n'),
+  });
+
+  return body;
+}
+
+function getBodyChangelog(pr) {
+  const [, changes = null] = pr.body.split(MARKER);
+
+  const lines = [
+    `## ${pr.title} #${pr.number}`,
+  ];
+
+  if (changes === null) {
+    core.error(`Changelog not found on ${pr.number}`);
+    lines.push(pr.body);
+  } else {
+    lines.push(changes);
+  }
+
+  lines.push('\n');
+
+  return lines.join('\n');
+}
+
+module.exports = {
+  addChangelog,
+  getBodyChangelog,
+};
+
+
+/***/ }),
+
+/***/ 6077:
+/***/ ((module) => {
+
+function findJiraTicket(prs) {
+  const lines = prs.flatMap(pr => (pr.body ? pr.body.split('\n') : []));
+  const linesMap = new Map(
+    lines
+      .filter(line => line.includes('atlassian.net'))
+      .map((line) => {
+        const match = line.match(
+          /https:\/\/nugitco.atlassian.net\/browse\/(\w+-\w+)/,
+        );
+        return [match[1], line];
+      }),
+  );
+
+  return Array.from(linesMap.values());
+}
+
+module.exports = {
+  findJiraTicket,
+};
+
+
+/***/ }),
+
+/***/ 2007:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const core = __nccwpck_require__(2186);
+const { getPullRequest } = __nccwpck_require__(1052);
+const { getBodyChangelog, addChangelog } = __nccwpck_require__(7141);
+const { getPrType, getPrsBetween } = __nccwpck_require__(9714);
+
+function getOnPremChangelog(subPrs) {
+  const [releasePrs, otherPrs] = subPrs.reduce(
+    (acc, p) => {
+      if (getPrType(p) === 'release') {
+        acc[0].push(p);
+      } else {
+        acc[1].push(p);
+      }
+
+      return acc;
+    },
+    [[], []],
+  );
+
+  if (otherPrs.length > 0) {
+    core.warning(`Found ${otherPrs.length} non-release PRs: ${otherPrs.map(p => p.number).join(', ')}`);
+  }
+
+  if (core.isDebug()) {
+    core.startGroup('release-PRs:');
+    core.debug(JSON.stringify(releasePrs, null, 2));
+    core.endGroup();
+  }
+
+  if (core.isDebug()) {
+    core.startGroup('other-PRs:');
+    core.debug(JSON.stringify(otherPrs, null, 2));
+    core.endGroup();
+  }
+
+  return subPrs.map(p => getBodyChangelog(p));
+}
+
+async function updateOnPremPR(octokit, owner, repo, prNumber) {
+  const pr = await getPullRequest(octokit, owner, repo, prNumber);
+
+  const includesPrs = await getPrsBetween(octokit, owner, repo, pr.base.sha, pr.head.sha);
+
+  const changelog = getOnPremChangelog(includesPrs);
+  const body = await addChangelog(octokit, owner, repo, pr, changelog);
+
+  if (!pr.labels.some(l => l.name === 'onprem')) {
+    core.info('Adding onprem label');
+    await octokit.rest.issues.addLabels({
+      owner,
+      repo,
+      issue_number: pr.number,
+      labels: ['onprem'],
+    });
+  }
+
+  return body;
+}
+
+module.exports = {
+  updateOnPremPR,
+};
+
+
+/***/ }),
+
+/***/ 9714:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const core = __nccwpck_require__(2186);
+const { getMergeCommits } = __nccwpck_require__(5375);
+const { getFirstCommit } = __nccwpck_require__(3244);
+const { findPullRequestFrom } = __nccwpck_require__(1052);
+
+function getPrType(pr) {
+  if (pr.base.ref === 'develop') {
+    return pr.labels.some(l => l.name === 'dependencies') ? 'deps' : 'feat';
+  }
+
+  if (pr.labels.some(l => l.name === 'release')) {
+    return 'release';
+  }
+
+  if (pr.base.ref === 'onprem-master') {
+    return 'onprem';
+  }
+
+  return 'unknown';
+}
+
+async function getPrsBetween(octokit, owner, repo, baseSha, headSha) {
+  const firstCommit = await getFirstCommit(
+    octokit,
+    owner,
+    repo,
+    baseSha,
+    headSha,
+  );
+
+  if (core.isDebug()) {
+    core.startGroup('first commit:');
+    core.debug(JSON.stringify(firstCommit, null, 2));
+    core.endGroup();
+  }
+
+  const possiblePrs = await findPullRequestFrom(
+    octokit,
+    owner,
+    repo,
+    firstCommit.commit.committer.date,
+  );
+
+  if (core.isDebug()) {
+    core.startGroup('possible PRs:');
+    core.debug(JSON.stringify(possiblePrs, null, 2));
+    core.endGroup();
+  }
+
+  const mergeCommits = await getMergeCommits(baseSha, headSha);
+
+  if (core.isDebug()) {
+    core.startGroup('merge commits:');
+    core.debug(JSON.stringify(Array.from(mergeCommits), null, 2));
+    core.endGroup();
+  }
+
+  const possiblePrsByMergeCommit = possiblePrs.reduce((acc, p) => {
+    acc.set(p.merge_commit_sha, p);
+    return acc;
+  }, new Map());
+
+  const includesPrs = Array.from(mergeCommits).reduce((acc, c) => {
+    if (possiblePrsByMergeCommit.has(c)) {
+      acc.push(possiblePrsByMergeCommit.get(c));
+    } else {
+      core.warning(`No Pr found for merge-commit ${c}`);
+    }
+
+    return acc;
+  }, []);
+
+  if (core.isDebug()) {
+    core.startGroup('included-PRs:');
+    core.debug(JSON.stringify(includesPrs, null, 2));
+    core.endGroup();
+  }
+
+  return includesPrs;
+}
+
+module.exports = {
+  getPrType,
+  getPrsBetween,
+};
+
+
+/***/ }),
+
+/***/ 1001:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const core = __nccwpck_require__(2186);
+const { getPullRequest } = __nccwpck_require__(1052);
+const { addChangelog } = __nccwpck_require__(7141);
+const { findJiraTicket } = __nccwpck_require__(6077);
+const { getPrsBetween, getPrType } = __nccwpck_require__(9714);
+
+function getReleaseChangelog(subPrs) {
+  const [prs, depsPRs] = subPrs.reduce(
+    (acc, p) => {
+      if (getPrType(p) === 'deps') {
+        acc[1].push(p);
+      } else {
+        acc[0].push(p);
+      }
+
+      return acc;
+    },
+    [[], []],
+  );
+
+  const tickets = findJiraTicket(subPrs);
+
+  if (core.isDebug()) {
+    core.startGroup('main-PRs:');
+    core.debug(JSON.stringify(prs, null, 2));
+    core.endGroup();
+  }
+
+  if (core.isDebug()) {
+    core.startGroup('deps-PRs:');
+    core.debug(JSON.stringify(depsPRs, null, 2));
+    core.endGroup();
+  }
+
+  const changelog = [
+    '\n**JIRA Tickets:**',
+    tickets.length > 0 ? '' : '- N/A',
+    ...tickets,
+    prs.length > 0 ? '\n**PRs:**' : '',
+    ...prs.map(p => `- ${p.title} #${p.number}`),
+    depsPRs.length > 0 ? '\n**Dependabot PRs:**' : '',
+    ...depsPRs.map(p => `- ${p.title} #${p.number}`),
+  ].filter(Boolean);
+
+  return changelog;
+}
+
+async function updateReleasePR(octokit, owner, repo, prNumber) {
+  const pr = await getPullRequest(octokit, owner, repo, prNumber);
+
+  const includesPrs = await getPrsBetween(octokit, owner, repo, pr.base.sha, pr.head.sha);
+
+  const changelog = getReleaseChangelog(includesPrs);
+  const body = await addChangelog(octokit, owner, repo, pr, changelog);
+
+  if (!pr.labels.some(l => l.name === 'release')) {
+    core.info('Adding release label');
+    await octokit.rest.issues.addLabels({
+      owner,
+      repo,
+      issue_number: pr.number,
+      labels: ['release'],
+    });
+  }
+
+  return body;
+}
+
+module.exports = {
+  updateReleasePR,
+};
+
+
+/***/ }),
+
+/***/ 5375:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const cp = __nccwpck_require__(3129);
+const core = __nccwpck_require__(2186);
+
+function getMergeCommits(base, branch) {
+  if (core.isDebug()) {
+    core.startGroup('getMergeCommits');
+  }
+
+  cp.execSync('git fetch --all');
+
+  const cmd = `git log ${base}...${branch} --merges --first-parent --oneline --right-only --format=%H`;
+  const output = cp.execSync(cmd);
+
+  core.debug(`Executing command: ${cmd}`);
+  core.debug(`Got output:\n${output}`);
+
+  const commits = output
+    .toString()
+    .split('\n')
+    .map(s => s.trim())
+    .filter(Boolean);
+
+  if (core.isDebug()) {
+    core.endGroup();
+  }
+
+  return new Set(commits);
+}
+
+module.exports = {
+  getMergeCommits,
+};
+
+
+/***/ }),
+
+/***/ 3244:
+/***/ ((module) => {
+
+async function getCommit(octokit, owner, repo, sha) {
+  const result = await octokit.rest.git.getCommit({
+    owner,
+    repo,
+    commit_sha: sha,
+  });
+
+  return result.data;
+}
+
+async function getFirstCommit(octokit, owner, repo, base, head) {
+  const result = await octokit.rest.repos.compareCommitsWithBasehead({
+    owner,
+    repo,
+    basehead: `${base}...${head}`,
+    page: 1,
+    per_page: 1,
+  });
+
+  return result.data.commits[0];
+}
+
+module.exports = {
+  getFirstCommit,
+  getCommit,
+};
+
+
+/***/ }),
+
+/***/ 1052:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const core = __nccwpck_require__(2186);
+const { getReviewers } = __nccwpck_require__(552);
+
+async function getPullRequest(octokit, owner, repo, prNumber) {
+  const result = await octokit.rest.pulls.get({
+    owner,
+    repo,
+    pull_number: prNumber,
+  });
+
+  return result.data;
+}
+
+async function findPullRequest(octokit, repo, mergeCommit) {
+  const result = await octokit.rest.search.issuesAndPullRequests({
+    q: `${mergeCommit}+repo:${repo}+state:closed`,
+  });
+
+  if (result.data.total_count !== 1) {
+    throw new Error(
+      `Unexpected findPullRequest result length, got ${result.total_count}`,
+    );
+  }
+
+  return getPullRequest(octokit, repo, result.data.items[0].number);
+}
+
+async function findPullRequestFrom(octokit, owner, repo, from) {
+  const q = `repo:${owner}/${repo}+merged:>${from}`;
+  const pageSize = 100;
+  const result = await octokit.rest.search.issuesAndPullRequests({
+    q,
+    per_page: pageSize,
+  });
+
+  const {
+    data: { total_count: totalCount, items },
+  } = result;
+
+  const pageCount = Math.ceil(totalCount / pageSize);
+  const pages = [items];
+  for (let i = 2; i < pageCount; i += 1) {
+    pages.push(
+      octokit.rest.search
+        .issuesAndPullRequests({
+          q,
+          per_page: pageSize,
+          page: i,
+        })
+        .then(d => d.data.items),
+    );
+  }
+
+  const data = await Promise.all(pages);
+
+  const prs = await Promise.all(
+    data.flat().map(item => getPullRequest(octokit, owner, repo, item.number)),
+  );
+
+  return prs;
+}
+
+async function getPullRequestCommits(octokit, repo, prNumber) {
+  const result = await octokit.rest.pulls.listCommits({
+    owner: repo.split('/')[0],
+    repo: repo.split('/')[1],
+    pull_number: prNumber,
+  });
+
+  return result.data;
+}
+
+async function findOpenPullRequests(octokit, owner, repo, head, base) {
+  const result = await octokit.rest.pulls.list({
+    owner,
+    repo,
+    head,
+    base,
+  });
+
+  return result.data[0] || null;
+}
+
+async function createPullRequest(octokit, owner, repo, head, base, title, reviewers) {
+  const pull = await findOpenPullRequests(octokit, owner, repo, head, base);
+
+  if (pull !== null) {
+    core.info('Pull request already exists');
+    return;
+  }
+
+  const compare = await octokit.rest.repos.compareCommitsWithBasehead({
+    owner,
+    repo,
+    basehead: `${base}...${head}`,
+  });
+
+  if (compare.data.ahead_by === 0) {
+    core.info('No changes');
+    return;
+  }
+
+  const newPull = await octokit.rest.pulls.create({
+    owner,
+    repo,
+    head,
+    base,
+    title,
+    draft: true,
+  });
+
+  core.info('Pull request created');
+
+  await octokit.rest.pulls.requestReviewers({
+    owner,
+    repo,
+    pull_number: newPull.data.number,
+    reviewers,
+  });
+
+  core.info('Reviews requested');
+}
+
+module.exports = {
+  findPullRequest,
+  getPullRequest,
+  getPullRequestCommits,
+  findPullRequestFrom,
+  createPullRequest,
+};
+
+
+/***/ }),
+
+/***/ 552:
+/***/ ((module) => {
+
+async function getTeamSlugs(octokit, owner) {
+  const result = await octokit.rest.teams.list({
+    org: owner,
+  });
+
+  return result.data.map(t => t.slug);
+}
+
+async function getMembers(octokit, owner, slug) {
+  const result = await octokit.rest.teams.listMembersInOrg({
+    org: owner,
+    team_slug: slug,
+  });
+
+  return result.data.map(m => m.login);
+}
+
+async function getReviewers(octokit, owner, userOrTeamIds) {
+  const data = await Promise.all(
+    userOrTeamIds.map((userOrTeamId) => {
+      if (!userOrTeamId.startsWith(`@${owner}/`)) {
+        return [userOrTeamId];
+      }
+      const [, slug] = userOrTeamId.split('/');
+      return getMembers(octokit, owner, slug);
+    }),
+  );
+
+  const result = new Set(data.flat());
+  return Array.from(result.values());
+}
+
+module.exports = {
+  getMembers,
+  getTeamSlugs,
+  getReviewers,
+};
+
+
+/***/ }),
+
+/***/ 2877:
 /***/ ((module) => {
 
 module.exports = eval("require")("encoding");
@@ -6490,7 +6593,7 @@ module.exports = eval("require")("encoding");
 
 /***/ }),
 
-/***/ 357:
+/***/ 2357:
 /***/ ((module) => {
 
 "use strict";
@@ -6498,7 +6601,7 @@ module.exports = require("assert");
 
 /***/ }),
 
-/***/ 129:
+/***/ 3129:
 /***/ ((module) => {
 
 "use strict";
@@ -6506,7 +6609,7 @@ module.exports = require("child_process");
 
 /***/ }),
 
-/***/ 614:
+/***/ 8614:
 /***/ ((module) => {
 
 "use strict";
@@ -6514,7 +6617,7 @@ module.exports = require("events");
 
 /***/ }),
 
-/***/ 747:
+/***/ 5747:
 /***/ ((module) => {
 
 "use strict";
@@ -6522,7 +6625,7 @@ module.exports = require("fs");
 
 /***/ }),
 
-/***/ 605:
+/***/ 8605:
 /***/ ((module) => {
 
 "use strict";
@@ -6530,7 +6633,7 @@ module.exports = require("http");
 
 /***/ }),
 
-/***/ 211:
+/***/ 7211:
 /***/ ((module) => {
 
 "use strict";
@@ -6538,7 +6641,7 @@ module.exports = require("https");
 
 /***/ }),
 
-/***/ 631:
+/***/ 1631:
 /***/ ((module) => {
 
 "use strict";
@@ -6546,7 +6649,7 @@ module.exports = require("net");
 
 /***/ }),
 
-/***/ 87:
+/***/ 2087:
 /***/ ((module) => {
 
 "use strict";
@@ -6554,7 +6657,7 @@ module.exports = require("os");
 
 /***/ }),
 
-/***/ 622:
+/***/ 5622:
 /***/ ((module) => {
 
 "use strict";
@@ -6562,7 +6665,7 @@ module.exports = require("path");
 
 /***/ }),
 
-/***/ 413:
+/***/ 2413:
 /***/ ((module) => {
 
 "use strict";
@@ -6570,7 +6673,7 @@ module.exports = require("stream");
 
 /***/ }),
 
-/***/ 16:
+/***/ 4016:
 /***/ ((module) => {
 
 "use strict";
@@ -6578,7 +6681,7 @@ module.exports = require("tls");
 
 /***/ }),
 
-/***/ 835:
+/***/ 8835:
 /***/ ((module) => {
 
 "use strict";
@@ -6586,7 +6689,7 @@ module.exports = require("url");
 
 /***/ }),
 
-/***/ 669:
+/***/ 1669:
 /***/ ((module) => {
 
 "use strict";
@@ -6594,7 +6697,7 @@ module.exports = require("util");
 
 /***/ }),
 
-/***/ 761:
+/***/ 8761:
 /***/ ((module) => {
 
 "use strict";
@@ -6643,15 +6746,16 @@ module.exports = require("zlib");
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
-const core = __nccwpck_require__(186);
-const github = __nccwpck_require__(438);
-const { updateReleasePR, updateOnPremPR } = __nccwpck_require__(515);
+const core = __nccwpck_require__(2186);
+const github = __nccwpck_require__(5438);
+const { updateOnPremPR } = __nccwpck_require__(2007);
+const { updateReleasePR } = __nccwpck_require__(1001);
 
-async function run () {
+async function run() {
   // exit early
   if (!['pull_request_target', 'pull_request'].includes(github.context.eventName)) {
     core.setFailed('action triggered outside of a pull_request');
-    process.exit(1)
+    process.exit(1);
   }
 
   if (core.isDebug()) {
@@ -6659,14 +6763,14 @@ async function run () {
     core.debug(JSON.stringify(github.context, null, 2));
     core.endGroup();
   }
-  
+
   try {
-    const { payload: { number, repository: { name, owner: { login }} } } = github.context;
+    const { payload: { number, repository: { name, owner: { login } } } } = github.context;
     const token = core.getInput('token');
     const octokit = github.getOctokit(token);
 
     const type = core.getInput('type', { required: true });
-    switch(type) {
+    switch (type) {
       case 'release':
         await updateReleasePR(octokit, login, name, number);
         break;

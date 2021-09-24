@@ -1,7 +1,7 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
-const { updateOnPremPR } = require('./changelog/onprem');
-const { updateReleasePR } = require('./changelog/release');
+const { updateOnPremPR } = require('../changelog/onprem');
+const { updateReleasePR } = require('../changelog/release');
 
 async function run() {
   // exit early
