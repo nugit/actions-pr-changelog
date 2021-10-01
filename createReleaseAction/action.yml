@@ -1,0 +1,21 @@
+name: 'Create Release'
+description: 'Create next release PR'
+inputs:
+  token:
+    description: 'github token'
+    required: true
+  base:
+    description: 'base branch'
+    required: true
+  head:
+    description: 'head branch'
+    required: true
+  title:
+    description: 'Pr title'
+    required: true
+  reviewers:
+    description: 'Comma separated list of reviewers'
+    required: true
+runs:
+  using: 'node12'
+  main: '../dist/createRelease/index.js'
