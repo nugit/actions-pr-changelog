@@ -1,3 +1,10 @@
+# [1.0.0-beta.2](https://github.com/nugit/actions-pr-changelog/compare/v1.0.0-beta.1...v1.0.0-beta.2) (2021-10-01)
+
+
+### Bug Fixes
+
+* bump @actions/core from 1.3.0 to 1.6.0 ([2f1fdf8](https://github.com/nugit/actions-pr-changelog/commit/2f1fdf8d42de975d2ffed0b7cf81788e6617da6c))
+
 # 1.0.0-beta.1 (2021-09-24)
 
 
