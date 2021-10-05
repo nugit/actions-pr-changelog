@@ -1,14 +1,13 @@
 const cp = require('child_process');
 const core = require('@actions/core');
 
-function getMergeCommits(base, branch) {
+function getMergeCommits(base, branch, since) {
   if (core.isDebug()) {
     core.startGroup('getMergeCommits');
   }
 
-  cp.execSync('git fetch --all');
-
-  const cmd = `git log ${base}...${branch} --merges --first-parent --oneline --right-only --format=%H`;
+  // @action/checkout shallow clone the repo, we need to extend
+  const cmd = `git fetch --update-shallow --shallow-since ${since} && git log ${base}...${branch} --merges --first-parent --oneline --right-only --format=%H`;
   const output = cp.execSync(cmd);
 
   core.debug(`Executing command: ${cmd}`);
