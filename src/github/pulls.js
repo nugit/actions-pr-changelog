@@ -73,8 +73,9 @@ async function findOpenPullRequests(octokit, owner, repo, head, base) {
   const result = await octokit.rest.pulls.list({
     owner,
     repo,
-    head,
+    head: `${owner}:${head}`,
     base,
+    state: 'open',
   });
 
   return result.data[0] || null;
@@ -84,7 +85,7 @@ async function createPullRequest(octokit, owner, repo, head, base, title, review
   const pull = await findOpenPullRequests(octokit, owner, repo, head, base);
 
   if (pull !== null) {
-    core.info('Pull request already exists');
+    core.info(`Pull request already exists: ${pull.html_url}`);
     return;
   }
 
@@ -122,6 +123,7 @@ async function createPullRequest(octokit, owner, repo, head, base, title, review
 
 module.exports = {
   findPullRequest,
+  findOpenPullRequests,
   getPullRequest,
   getPullRequestCommits,
   findPullRequestFrom,
