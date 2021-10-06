@@ -1,17 +1,20 @@
-# [1.0.0-beta.3](https://github.com/nugit/actions-pr-changelog/compare/v1.0.0-beta.2...v1.0.0-beta.3) (2021-10-06)
+# [1.2.0](https://github.com/nugit/actions-pr-changelog/compare/v1.1.0...v1.2.0) (2021-10-01)
 
 
 ### Bug Fixes
 
-* findOpenPullRequests ([e4402fd](https://github.com/nugit/actions-pr-changelog/commit/e4402fdbddeb47a128a070ef07ea2f18f04ad219))
-* support shallow clone ([b2cc13b](https://github.com/nugit/actions-pr-changelog/commit/b2cc13bbd74da01d86850a5086be25370ec447d9))
+* build ([1db9466](https://github.com/nugit/actions-pr-changelog/commit/1db946681a9fb3271c0feff800c60521adf629aa))
+* cannot access team members ([0ff011f](https://github.com/nugit/actions-pr-changelog/commit/0ff011f37596495563c9af25d043af51b209d32a))
+* create release action ([20d1a84](https://github.com/nugit/actions-pr-changelog/commit/20d1a841761a9e49454856b0e4385f5a6398562e))
+* merge origin feat/refactor ([b7e5fca](https://github.com/nugit/actions-pr-changelog/commit/b7e5fca15018ec8104fb1362a2873104ca0a1b2b))
+* merge origin feat/release-pr ([19be3cd](https://github.com/nugit/actions-pr-changelog/commit/19be3cd4ec8d4d5b33b4e1743f1d5de649b2931e))
+* not supported syntax ([512b1f5](https://github.com/nugit/actions-pr-changelog/commit/512b1f56052d0d091dfee8a78c92906aa51e0410))
+* trim empty lines ([e409b29](https://github.com/nugit/actions-pr-changelog/commit/e409b29bd2eb43df641e266369dcb8ac8ad39cd2))
 
-# [1.0.0-beta.2](https://github.com/nugit/actions-pr-changelog/compare/v1.0.0-beta.1...v1.0.0-beta.2) (2021-10-01)
 
+### Features
 
-### Bug Fixes
-
-* bump @actions/core from 1.3.0 to 1.6.0 ([2f1fdf8](https://github.com/nugit/actions-pr-changelog/commit/2f1fdf8d42de975d2ffed0b7cf81788e6617da6c))
+* add createReleaseAction ([5bfd179](https://github.com/nugit/actions-pr-changelog/commit/5bfd1794d9fc4e1dbe1f84a246487b45e1d9fa67))
 
 # 1.0.0-beta.1 (2021-09-24)
 
