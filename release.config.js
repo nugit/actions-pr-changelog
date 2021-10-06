@@ -25,6 +25,12 @@ const mainConfig = {
       },
     ],
     [
+      '@semantic-release/exec',
+      {
+        prepareCmd: 'yarn build',
+      },
+    ],
+    [
       '@semantic-release/git',
       {
         assets: ['CHANGELOG.md', 'package.json', 'dist/**'],
@@ -34,9 +40,7 @@ const mainConfig = {
       },
     ],
     [
-      '@semantic-release/github', {
-        assets: ['dist/**'],
-      },
+      '@semantic-release/github',
     ],
     [
       'semantic-release-slack-bot',
