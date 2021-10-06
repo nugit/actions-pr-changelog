@@ -26,7 +26,7 @@
   "homepage": "https://github.com/nugit/actions-pr-changelog#readme",
   "devDependencies": {
     "@babel/core": "^7.15.5",
-    "@babel/preset-env": "^7.15.6",
+    "@babel/preset-env": "^7.15.8",
     "@babel/preset-flow": "^7.14.5",
     "@commitlint/cli": "^13.2.0",
     "@commitlint/config-conventional": "^13.2.0",
