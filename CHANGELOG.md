@@ -1,3 +1,11 @@
+# [1.0.0-beta.3](https://github.com/nugit/actions-pr-changelog/compare/v1.0.0-beta.2...v1.0.0-beta.3) (2021-10-06)
+
+
+### Bug Fixes
+
+* findOpenPullRequests ([e4402fd](https://github.com/nugit/actions-pr-changelog/commit/e4402fdbddeb47a128a070ef07ea2f18f04ad219))
+* support shallow clone ([b2cc13b](https://github.com/nugit/actions-pr-changelog/commit/b2cc13bbd74da01d86850a5086be25370ec447d9))
+
 # [1.0.0-beta.2](https://github.com/nugit/actions-pr-changelog/compare/v1.0.0-beta.1...v1.0.0-beta.2) (2021-10-01)
 
 
