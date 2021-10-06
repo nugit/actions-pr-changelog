@@ -1,9 +1,11 @@
-## [1.2.1-beta.2](https://github.com/nugit/actions-pr-changelog/compare/v1.2.1-beta.1...v1.2.1-beta.2) (2021-10-06)
+## [1.2.1](https://github.com/nugit/actions-pr-changelog/compare/v1.2.0...v1.2.1) (2021-10-06)
 
 
 ### Bug Fixes
 
-* deployment ([589e358](https://github.com/nugit/actions-pr-changelog/commit/589e358c07d54dbe305c969dc224b78b26f6b00b))
+* bump @actions/core from 1.3.0 to 1.6.0 ([2f1fdf8](https://github.com/nugit/actions-pr-changelog/commit/2f1fdf8d42de975d2ffed0b7cf81788e6617da6c))
+* findOpenPullRequests ([e4402fd](https://github.com/nugit/actions-pr-changelog/commit/e4402fdbddeb47a128a070ef07ea2f18f04ad219))
+* support shallow clone ([b2cc13b](https://github.com/nugit/actions-pr-changelog/commit/b2cc13bbd74da01d86850a5086be25370ec447d9))
 
 ## [1.2.1-beta.1](https://github.com/nugit/actions-pr-changelog/compare/v1.2.0...v1.2.1-beta.1) (2021-10-06)
 
