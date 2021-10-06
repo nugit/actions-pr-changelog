@@ -47,7 +47,7 @@ async function getPrsBetween(octokit, owner, repo, baseSha, headSha) {
     core.endGroup();
   }
 
-  const mergeCommits = await getMergeCommits(baseSha, headSha);
+  const mergeCommits = await getMergeCommits(baseSha, headSha, firstCommit.commit.committer.date);
 
   if (core.isDebug()) {
     core.startGroup('merge commits:');
