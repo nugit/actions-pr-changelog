@@ -1,6 +1,5 @@
 const core = require('@actions/core');
-const { getMergeCommits } = require('../git/commits');
-const { getFirstCommit } = require('../github/commits');
+const { getFirstCommit, findMergeCommits } = require('../github/commits');
 const { findPullRequestFrom } = require('../github/pulls');
 
 function getPrType(pr) {
@@ -47,7 +46,7 @@ async function getPrsBetween(octokit, owner, repo, baseSha, headSha) {
     core.endGroup();
   }
 
-  const mergeCommits = await getMergeCommits(baseSha, headSha, firstCommit.commit.committer.date);
+  const mergeCommits = await findMergeCommits(octokit, owner, repo, baseSha, headSha);
 
   if (core.isDebug()) {
     core.startGroup('merge commits:');
