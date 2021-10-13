@@ -38,7 +38,7 @@ async function findPullRequestFrom(octokit, owner, repo, from) {
 
   const pageCount = Math.ceil(totalCount / pageSize);
   const pages = [items];
-  for (let i = 2; i < pageCount; i += 1) {
+  for (let i = 2; i <= pageCount; i += 1) {
     pages.push(
       octokit.rest.search
         .issuesAndPullRequests({
