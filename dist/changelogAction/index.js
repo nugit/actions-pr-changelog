@@ -6369,8 +6369,7 @@ module.exports = {
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const core = __nccwpck_require__(2186);
-const { getMergeCommits } = __nccwpck_require__(5375);
-const { getFirstCommit } = __nccwpck_require__(3244);
+const { getFirstCommit, findMergeCommits } = __nccwpck_require__(3244);
 const { findPullRequestFrom } = __nccwpck_require__(1052);
 
 function getPrType(pr) {
@@ -6417,7 +6416,7 @@ async function getPrsBetween(octokit, owner, repo, baseSha, headSha) {
     core.endGroup();
   }
 
-  const mergeCommits = await getMergeCommits(baseSha, headSha, firstCommit.commit.committer.date);
+  const mergeCommits = await findMergeCommits(octokit, owner, repo, baseSha, headSha);
 
   if (core.isDebug()) {
     core.startGroup('merge commits:');
@@ -6535,44 +6534,6 @@ module.exports = {
 
 /***/ }),
 
-/***/ 5375:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-const cp = __nccwpck_require__(3129);
-const core = __nccwpck_require__(2186);
-
-function getMergeCommits(base, branch, since) {
-  if (core.isDebug()) {
-    core.startGroup('getMergeCommits');
-  }
-
-  // @action/checkout shallow clone the repo, we need to extend
-  const cmd = `git fetch --update-shallow --shallow-since ${since} && git log ${base}...${branch} --merges --first-parent --oneline --right-only --format=%H`;
-  const output = cp.execSync(cmd);
-
-  core.debug(`Executing command: ${cmd}`);
-  core.debug(`Got output:\n${output}`);
-
-  const commits = output
-    .toString()
-    .split('\n')
-    .map(s => s.trim())
-    .filter(Boolean);
-
-  if (core.isDebug()) {
-    core.endGroup();
-  }
-
-  return new Set(commits);
-}
-
-module.exports = {
-  getMergeCommits,
-};
-
-
-/***/ }),
-
 /***/ 3244:
 /***/ ((module) => {
 
@@ -6598,9 +6559,48 @@ async function getFirstCommit(octokit, owner, repo, base, head) {
   return result.data.commits[0];
 }
 
+async function findMergeCommits(octokit, owner, repo, base, head) {
+  const pageSize = 5;
+  const result = await octokit.rest.repos.compareCommitsWithBasehead({
+    owner,
+    repo,
+    basehead: `${base}...${head}`,
+    page: 1,
+    per_page: pageSize,
+  });
+
+  const {
+    data: { total_commits: totalCount, commits },
+  } = result;
+
+  const pageCount = Math.ceil(totalCount / pageSize);
+  const pages = [commits];
+  for (let i = 2; i <= pageCount; i += 1) {
+    pages.push(
+      octokit.rest.repos
+        .compareCommitsWithBasehead({
+          owner,
+          repo,
+          basehead: `${base}...${head}`,
+          page: i,
+          per_page: pageSize,
+        })
+        .then(d => d.data.commits),
+    );
+  }
+
+  const data = await Promise.all(pages);
+
+  return data
+    .flat()
+    .filter(c => c.parents.length > 1)
+    .map(c => c.sha);
+}
+
 module.exports = {
   getFirstCommit,
   getCommit,
+  findMergeCommits,
 };
 
 
@@ -6649,7 +6649,7 @@ async function findPullRequestFrom(octokit, owner, repo, from) {
 
   const pageCount = Math.ceil(totalCount / pageSize);
   const pages = [items];
-  for (let i = 2; i < pageCount; i += 1) {
+  for (let i = 2; i <= pageCount; i += 1) {
     pages.push(
       octokit.rest.search
         .issuesAndPullRequests({
@@ -6757,14 +6757,6 @@ module.exports = eval("require")("encoding");
 
 "use strict";
 module.exports = require("assert");
-
-/***/ }),
-
-/***/ 3129:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("child_process");
 
 /***/ }),
 
