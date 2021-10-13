@@ -1,3 +1,11 @@
+## [1.2.3-beta.1](https://github.com/nugit/actions-pr-changelog/compare/v1.2.2...v1.2.3-beta.1) (2021-10-13)
+
+
+### Bug Fixes
+
+* get merge commits ([23a6c14](https://github.com/nugit/actions-pr-changelog/commit/23a6c14b8b258d27016e0302027fd1957284069a))
+* get pulls paginations ([022fd2f](https://github.com/nugit/actions-pr-changelog/commit/022fd2f4dae56863b9428ca46794eb4022b8c57b))
+
 ## [1.2.2](https://github.com/nugit/actions-pr-changelog/compare/v1.2.1...v1.2.2) (2021-10-06)
 
 
