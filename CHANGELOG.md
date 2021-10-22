@@ -1,3 +1,11 @@
+## [1.2.4](https://github.com/nugit/actions-pr-changelog/compare/v1.2.3...v1.2.4) (2021-10-22)
+
+
+### Bug Fixes
+
+* onprem PR should only include release PRs ([adb3f55](https://github.com/nugit/actions-pr-changelog/commit/adb3f557f50aa888290de0136a0889a947284a8b))
+* pr body is nullable ([24ec33c](https://github.com/nugit/actions-pr-changelog/commit/24ec33c9bbef0c80e0dd3812fe939df077b83006))
+
 ## [1.2.4-beta.1](https://github.com/nugit/actions-pr-changelog/compare/v1.2.3...v1.2.4-beta.1) (2021-10-22)
 
 
