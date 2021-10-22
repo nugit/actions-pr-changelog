@@ -6244,7 +6244,7 @@ async function addChangelog(octokit, owner, repo, pr, changelog) {
 }
 
 function getBodyChangelog(pr) {
-  const [, changes = null] = pr.body.split(MARKER);
+  const [, changes = null] = pr.body?.split(MARKER) ?? [];
 
   const lines = [
     `## ${pr.title} #${pr.number}`,
@@ -6305,22 +6305,9 @@ const { getBodyChangelog, addChangelog } = __nccwpck_require__(7141);
 const { getPrType, getPrsBetween } = __nccwpck_require__(9714);
 
 function getOnPremChangelog(subPrs) {
-  const [releasePrs, otherPrs] = subPrs.reduce(
-    (acc, p) => {
-      if (getPrType(p) === 'release') {
-        acc[0].push(p);
-      } else {
-        acc[1].push(p);
-      }
-
-      return acc;
-    },
-    [[], []],
+  const releasePrs = subPrs.filter(
+    p => getPrType(p) === 'release',
   );
-
-  if (otherPrs.length > 0) {
-    core.warning(`Found ${otherPrs.length} non-release PRs: ${otherPrs.map(p => p.number).join(', ')}`);
-  }
 
   if (core.isDebug()) {
     core.startGroup('release-PRs:');
@@ -6328,13 +6315,7 @@ function getOnPremChangelog(subPrs) {
     core.endGroup();
   }
 
-  if (core.isDebug()) {
-    core.startGroup('other-PRs:');
-    core.debug(JSON.stringify(otherPrs, null, 2));
-    core.endGroup();
-  }
-
-  return subPrs.map(p => getBodyChangelog(p));
+  return releasePrs.map(p => getBodyChangelog(p));
 }
 
 async function updateOnPremPR(octokit, owner, repo, prNumber) {
@@ -6377,7 +6358,7 @@ function getPrType(pr) {
     return pr.labels.some(l => l.name === 'dependencies') ? 'deps' : 'feat';
   }
 
-  if (pr.labels.some(l => l.name === 'release')) {
+  if (pr.base.ref === 'master') {
     return 'release';
   }
 
