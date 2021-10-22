@@ -4,22 +4,9 @@ const { getBodyChangelog, addChangelog } = require('./body');
 const { getPrType, getPrsBetween } = require('./pulls');
 
 function getOnPremChangelog(subPrs) {
-  const [releasePrs, otherPrs] = subPrs.reduce(
-    (acc, p) => {
-      if (getPrType(p) === 'release') {
-        acc[0].push(p);
-      } else {
-        acc[1].push(p);
-      }
-
-      return acc;
-    },
-    [[], []],
+  const releasePrs = subPrs.filter(
+    p => getPrType(p) === 'release',
   );
-
-  if (otherPrs.length > 0) {
-    core.warning(`Found ${otherPrs.length} non-release PRs: ${otherPrs.map(p => p.number).join(', ')}`);
-  }
 
   if (core.isDebug()) {
     core.startGroup('release-PRs:');
@@ -27,13 +14,7 @@ function getOnPremChangelog(subPrs) {
     core.endGroup();
   }
 
-  if (core.isDebug()) {
-    core.startGroup('other-PRs:');
-    core.debug(JSON.stringify(otherPrs, null, 2));
-    core.endGroup();
-  }
-
-  return subPrs.map(p => getBodyChangelog(p));
+  return releasePrs.map(p => getBodyChangelog(p));
 }
 
 async function updateOnPremPR(octokit, owner, repo, prNumber) {

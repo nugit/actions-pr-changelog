@@ -7,7 +7,7 @@ function getPrType(pr) {
     return pr.labels.some(l => l.name === 'dependencies') ? 'deps' : 'feat';
   }
 
-  if (pr.labels.some(l => l.name === 'release')) {
+  if (pr.base.ref === 'master') {
     return 'release';
   }
 
