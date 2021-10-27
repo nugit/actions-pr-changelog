@@ -1,3 +1,10 @@
+## [1.2.5](https://github.com/nugit/actions-pr-changelog/compare/v1.2.4...v1.2.5) (2021-10-27)
+
+
+### Bug Fixes
+
+* syntax error ([909e03b](https://github.com/nugit/actions-pr-changelog/commit/909e03b7042db0c4d38fea544d5c1562bd195990))
+
 ## [1.2.5-beta.1](https://github.com/nugit/actions-pr-changelog/compare/v1.2.4...v1.2.5-beta.1) (2021-10-27)
 
 
