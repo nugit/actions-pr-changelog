@@ -1,4 +1,9 @@
 {
   "root": true,
-  "extends": "nugit/script"
+  "extends": "nugit/script",
+  "parser": "espree",
+  "parserOptions": {
+    "ecmaVersion": 2019,
+    "sourceType": "module"
+  }
 }

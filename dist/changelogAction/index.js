@@ -6244,7 +6244,7 @@ async function addChangelog(octokit, owner, repo, pr, changelog) {
 }
 
 function getBodyChangelog(pr) {
-  const [, changes = null] = pr.body?.split(MARKER) ?? [];
+  const [, changes = null] = pr.body ? pr.body.split(MARKER) : [];
 
   const lines = [
     `## ${pr.title} #${pr.number}`,
