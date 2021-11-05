@@ -46,7 +46,7 @@
     "flow-bin": "^0.163.0",
     "husky": "^7.0.4",
     "semantic-release": "^17.4.7",
-    "semantic-release-slack-bot": "^2.1.1"
+    "semantic-release-slack-bot": "^2.1.2"
   },
   "dependencies": {
     "@actions/core": "^1.6.0",
