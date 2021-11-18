@@ -43,7 +43,7 @@
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-react": "^7.27.0",
     "eslint-plugin-react-hooks": "^4.3.0",
-    "flow-bin": "^0.164.0",
+    "flow-bin": "^0.165.0",
     "husky": "^7.0.4",
     "semantic-release": "^18.0.0",
     "semantic-release-slack-bot": "^2.1.2"
