@@ -45,7 +45,7 @@
     "eslint-plugin-react-hooks": "^4.3.0",
     "flow-bin": "^0.165.1",
     "husky": "^7.0.4",
-    "semantic-release": "^18.0.0",
+    "semantic-release": "^18.0.1",
     "semantic-release-slack-bot": "^2.1.2"
   },
   "dependencies": {
