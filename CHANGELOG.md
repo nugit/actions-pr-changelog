@@ -1,3 +1,10 @@
+## [1.2.6-beta.1](https://github.com/nugit/actions-pr-changelog/compare/v1.2.5...v1.2.6-beta.1) (2021-12-09)
+
+
+### Bug Fixes
+
+* update dependencies ([6fff1eb](https://github.com/nugit/actions-pr-changelog/commit/6fff1ebf39a6b470b65023b3d9aa12e7d957f7be))
+
 ## [1.2.5](https://github.com/nugit/actions-pr-changelog/compare/v1.2.4...v1.2.5) (2021-10-27)
 
 
