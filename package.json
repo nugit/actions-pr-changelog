@@ -24,6 +24,9 @@
     "url": "https://github.com/nugit/actions-pr-changelog/issues"
   },
   "homepage": "https://github.com/nugit/actions-pr-changelog#readme",
+  "engines": {
+    "node": ">=14.17"
+  },
   "devDependencies": {
     "@babel/core": "^7.16.10",
     "@babel/eslint-parser": "^7.16.5",
