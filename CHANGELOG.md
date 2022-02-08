@@ -1,3 +1,19 @@
+# [2.0.0](https://github.com/nugit/actions-pr-changelog/compare/v1.2.6...v2.0.0) (2022-02-08)
+
+
+### Bug Fixes
+
+* upgrade dotenv ([a769270](https://github.com/nugit/actions-pr-changelog/commit/a7692708871f95f8e2cdf151c8e083f50a05b8bf))
+* upgrade minor dependencies ([bf6096c](https://github.com/nugit/actions-pr-changelog/commit/bf6096ce62f5361a67f07bd1c9efeae66a3f29f4))
+
+
+* feat!: upgrade to node 14 ([f782937](https://github.com/nugit/actions-pr-changelog/commit/f78293785af572bb2f70aeea539b55b7281a1ef1))
+
+
+### BREAKING CHANGES
+
+* Upgrade Node 14
+
 # [2.0.0-beta.1](https://github.com/nugit/actions-pr-changelog/compare/v1.2.6...v2.0.0-beta.1) (2022-01-25)
 
 
