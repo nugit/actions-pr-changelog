@@ -1,3 +1,10 @@
+## [2.0.1-beta.1](https://github.com/nugit/actions-pr-changelog/compare/v2.0.0...v2.0.1-beta.1) (2022-04-04)
+
+
+### Bug Fixes
+
+* bump @actions/github from 5.0.0 to 5.0.1 ([eace83b](https://github.com/nugit/actions-pr-changelog/commit/eace83bbe0fa5736dfe2c21b0df9792d541518ff))
+
 # [2.0.0](https://github.com/nugit/actions-pr-changelog/compare/v1.2.6...v2.0.0) (2022-02-08)
 
 
