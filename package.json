@@ -43,7 +43,7 @@
     "eslint-plugin-eslint-comments": "^3.2.0",
     "eslint-plugin-fb-flow": "^0.0.4",
     "eslint-plugin-flowtype": "^6.1.1",
-    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-import": "^2.26.0",
     "flow-bin": "^0.175.1",
     "husky": "^7.0.4",
     "semantic-release": "^18.0.1",
