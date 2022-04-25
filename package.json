@@ -1,6 +1,6 @@
 {
   "name": "actions-pr-changelog",
-  "version": "2.0.1-beta.1",
+  "version": "2.0.1-beta.2",
   "description": "actions-pr-changelog",
   "main": "dist/index.js",
   "scripts": {

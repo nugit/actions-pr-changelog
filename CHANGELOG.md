@@ -1,3 +1,10 @@
+## [2.0.1-beta.2](https://github.com/nugit/actions-pr-changelog/compare/v2.0.1-beta.1...v2.0.1-beta.2) (2022-04-25)
+
+
+### Bug Fixes
+
+* bump @actions/core from 1.6.0 to 1.7.0 ([db24c5b](https://github.com/nugit/actions-pr-changelog/commit/db24c5b66cfab65b538315a7f5d979787d6df439))
+
 ## [2.0.1-beta.1](https://github.com/nugit/actions-pr-changelog/compare/v2.0.0...v2.0.1-beta.1) (2022-04-04)
 
 
