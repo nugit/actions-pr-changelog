@@ -3,13 +3,28 @@ const github = require('@actions/github');
 const { updateOnPremPR } = require('../changelog/onprem');
 const { updateReleasePR } = require('../changelog/release');
 
-async function run() {
-  // exit early
-  if (!['pull_request_target', 'pull_request'].includes(github.context.eventName)) {
-    core.setFailed('action triggered outside of a pull_request');
+async function getPrNumber(octokit) {
+  const { payload: { repository: { name, owner: { login } } } } = github.context;
+  if (['pull_request_target', 'pull_request'].includes(github.context.eventName)) {
+    return github.context.payload.number;
+  }
+
+  const prs = await octokit.rest.pulls.list({
+    owner: login,
+    repo: name,
+    state: 'open',
+    base: core.getInput('base'),
+  });
+
+  if (prs.data.length === 0) {
+    core.info('No open pull requests found');
     process.exit(1);
   }
 
+  return prs.data[0].number;
+}
+
+async function run() {
   if (core.isDebug()) {
     core.startGroup('github.context:');
     core.debug(JSON.stringify(github.context, null, 2));
@@ -17,11 +32,12 @@ async function run() {
   }
 
   try {
-    const { payload: { number, repository: { name, owner: { login } } } } = github.context;
+    const { payload: { repository: { name, owner: { login } } } } = github.context;
     const token = core.getInput('token');
     const octokit = github.getOctokit(token);
 
     const type = core.getInput('type', { required: true });
+    const number = await getPrNumber(octokit);
     switch (type) {
       case 'release':
         await updateReleasePR(octokit, login, name, number);

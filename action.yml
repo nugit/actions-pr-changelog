@@ -7,6 +7,9 @@ inputs:
   type:
     description: 'bot type: release or onprem'
     required: true
+  base:
+    description: 'base branch used when not triggered in pull_request context'
+    required: false
 runs:
   using: 'node12'
   main: 'dist/changelogAction/index.js'
