@@ -1,3 +1,15 @@
+# [2.1.0-beta.1](https://github.com/nugit/actions-pr-changelog/compare/v2.0.1-beta.3...v2.1.0-beta.1) (2022-05-12)
+
+
+### Bug Fixes
+
+* only create release PR when changes are detected ([e6f9ca0](https://github.com/nugit/actions-pr-changelog/commit/e6f9ca0d01e0f20eee03d36fdae7361f5aade4d5))
+
+
+### Features
+
+* add base parameter to support workflow_run events ([a0e909d](https://github.com/nugit/actions-pr-changelog/commit/a0e909d6888c194121561e8e76bd81740d570b30))
+
 ## [2.0.1-beta.3](https://github.com/nugit/actions-pr-changelog/compare/v2.0.1-beta.2...v2.0.1-beta.3) (2022-05-09)
 
 
