@@ -1,3 +1,24 @@
+## [2.0.1-beta.3](https://github.com/nugit/actions-pr-changelog/compare/v2.0.1-beta.2...v2.0.1-beta.3) (2022-05-09)
+
+
+### Bug Fixes
+
+* bump @actions/core from 1.7.0 to 1.8.0 ([ebaa1b0](https://github.com/nugit/actions-pr-changelog/commit/ebaa1b000e3a3fd0124969a7fa4e5c7d19bc8dab))
+
+## [2.0.1-beta.2](https://github.com/nugit/actions-pr-changelog/compare/v2.0.1-beta.1...v2.0.1-beta.2) (2022-04-25)
+
+
+### Bug Fixes
+
+* bump @actions/core from 1.6.0 to 1.7.0 ([db24c5b](https://github.com/nugit/actions-pr-changelog/commit/db24c5b66cfab65b538315a7f5d979787d6df439))
+
+## [2.0.1-beta.1](https://github.com/nugit/actions-pr-changelog/compare/v2.0.0...v2.0.1-beta.1) (2022-04-04)
+
+
+### Bug Fixes
+
+* bump @actions/github from 5.0.0 to 5.0.1 ([eace83b](https://github.com/nugit/actions-pr-changelog/commit/eace83bbe0fa5736dfe2c21b0df9792d541518ff))
+
 # [2.0.0](https://github.com/nugit/actions-pr-changelog/compare/v1.2.6...v2.0.0) (2022-02-08)
 
 
