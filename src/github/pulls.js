@@ -95,7 +95,7 @@ async function createPullRequest(octokit, owner, repo, head, base, title, review
     basehead: `${base}...${head}`,
   });
 
-  if (compare.data.ahead_by === 0) {
+  if (compare.data.files.length === 0) {
     core.info('No changes');
     return;
   }
