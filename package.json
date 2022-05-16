@@ -32,7 +32,7 @@
     "@babel/eslint-parser": "^7.17.0",
     "@babel/preset-env": "^7.17.10",
     "@babel/preset-flow": "^7.16.7",
-    "@commitlint/cli": "^16.2.4",
+    "@commitlint/cli": "^16.3.0",
     "@commitlint/config-conventional": "^16.2.4",
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/exec": "^6.0.3",
@@ -50,7 +50,7 @@
     "semantic-release-slack-bot": "^3.5.2"
   },
   "dependencies": {
-    "@actions/core": "^1.8.0",
+    "@actions/core": "^1.8.2",
     "@actions/github": "^5.0.1",
     "dotenv": "^11.0.0"
   }
