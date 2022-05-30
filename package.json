@@ -28,7 +28,7 @@
     "node": ">=14.17"
   },
   "devDependencies": {
-    "@babel/core": "^7.18.0",
+    "@babel/core": "^7.18.2",
     "@babel/eslint-parser": "^7.17.0",
     "@babel/preset-env": "^7.18.0",
     "@babel/preset-flow": "^7.17.12",
@@ -37,7 +37,7 @@
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
-    "@vercel/ncc": "^0.33.4",
+    "@vercel/ncc": "^0.34.0",
     "eslint": "^7.32.0",
     "eslint-config-nugit": "^2.0.3",
     "eslint-plugin-eslint-comments": "^3.2.0",
