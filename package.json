@@ -44,7 +44,7 @@
     "eslint-plugin-fb-flow": "^0.0.4",
     "eslint-plugin-flowtype": "^6.1.1",
     "eslint-plugin-import": "^2.26.0",
-    "flow-bin": "^0.178.1",
+    "flow-bin": "^0.179.0",
     "husky": "^7.0.4",
     "semantic-release": "^18.0.1",
     "semantic-release-slack-bot": "^3.5.3"
