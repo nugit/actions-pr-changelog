@@ -10296,6 +10296,13 @@ async function getPrNumber(octokit) {
     return github.context.payload.number;
   }
 
+  if (github.context.eventName === 'workflow_run' && github.context.payload.workflow_run.event === 'pull_request') {
+    const prs = github.context.payload.workflow_run.pull_requests;
+    if (Array.isArray(prs) && prs.length > 0) {
+      return prs[0].number;
+    }
+  }
+
   const prs = await octokit.rest.pulls.list({
     owner: login,
     repo: name,

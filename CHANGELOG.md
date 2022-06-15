@@ -1,3 +1,10 @@
+# [2.1.0-beta.4](https://github.com/nugit/actions-pr-changelog/compare/v2.1.0-beta.3...v2.1.0-beta.4) (2022-06-15)
+
+
+### Features
+
+* support workflow_run events ([a602401](https://github.com/nugit/actions-pr-changelog/commit/a6024016d2e3136506119da3dbea6f134fc9bbf6))
+
 # [2.1.0-beta.3](https://github.com/nugit/actions-pr-changelog/compare/v2.1.0-beta.2...v2.1.0-beta.3) (2022-05-17)
 
 
