@@ -1,3 +1,21 @@
+# [2.1.0](https://github.com/nugit/actions-pr-changelog/compare/v2.0.0...v2.1.0) (2022-06-21)
+
+
+### Bug Fixes
+
+* bump @actions/core from 1.6.0 to 1.7.0 ([db24c5b](https://github.com/nugit/actions-pr-changelog/commit/db24c5b66cfab65b538315a7f5d979787d6df439))
+* bump @actions/core from 1.7.0 to 1.8.0 ([ebaa1b0](https://github.com/nugit/actions-pr-changelog/commit/ebaa1b000e3a3fd0124969a7fa4e5c7d19bc8dab))
+* bump @actions/core from 1.8.0 to 1.8.2 ([994955e](https://github.com/nugit/actions-pr-changelog/commit/994955e3eccbed9a034869ad80a0844bf56b6c88))
+* bump @actions/github from 5.0.0 to 5.0.1 ([eace83b](https://github.com/nugit/actions-pr-changelog/commit/eace83bbe0fa5736dfe2c21b0df9792d541518ff))
+* bump @actions/github from 5.0.1 to 5.0.3 ([2a17e9d](https://github.com/nugit/actions-pr-changelog/commit/2a17e9dfbb2bb13cd6442e163a56456b57726abe))
+* only create release PR when changes are detected ([e6f9ca0](https://github.com/nugit/actions-pr-changelog/commit/e6f9ca0d01e0f20eee03d36fdae7361f5aade4d5))
+
+
+### Features
+
+* add base parameter to support workflow_run events ([a0e909d](https://github.com/nugit/actions-pr-changelog/commit/a0e909d6888c194121561e8e76bd81740d570b30))
+* support workflow_run events ([a602401](https://github.com/nugit/actions-pr-changelog/commit/a6024016d2e3136506119da3dbea6f134fc9bbf6))
+
 # [2.1.0-beta.4](https://github.com/nugit/actions-pr-changelog/compare/v2.1.0-beta.3...v2.1.0-beta.4) (2022-06-15)
 
 
