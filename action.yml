@@ -10,6 +10,7 @@ inputs:
   base:
     description: 'base branch used when not triggered in pull_request context'
     required: false
+    default: ''
 runs:
   using: 'node12'
   main: 'dist/changelogAction/index.js'

@@ -5,15 +5,25 @@ const { updateReleasePR } = require('../changelog/release');
 
 async function getPrNumber(octokit) {
   const { payload: { repository: { name, owner: { login } } } } = github.context;
+
   if (['pull_request_target', 'pull_request'].includes(github.context.eventName)) {
     return github.context.payload.number;
   }
 
-  if (github.context.eventName === 'workflow_run' && github.context.payload.workflow_run.event === 'pull_request') {
-    const prs = github.context.payload.workflow_run.pull_requests;
-    if (Array.isArray(prs) && prs.length > 0) {
-      return prs[0].number;
-    }
+  if (github.context.eventName !== 'workflow_run') {
+    core.setFailed('github event not supported');
+    process.exit(1);
+  }
+
+  if (github.context.eventName === 'workflow_run' && github.context.payload.workflow_run.conclusion !== 'success') {
+    core.info('Skipping changelog as pull request is not merged');
+    process.exit(0);
+  }
+
+  const base = core.getInput('base');
+  if (!base) {
+    core.setFailed('base input is required with workflow_run');
+    process.exit(1);
   }
 
   const prs = await octokit.rest.pulls.list({
@@ -24,7 +34,7 @@ async function getPrNumber(octokit) {
   });
 
   if (prs.data.length === 0) {
-    core.info('No open pull requests found');
+    core.setFailed('No open pull requests found');
     process.exit(1);
   }
 
