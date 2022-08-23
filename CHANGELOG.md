@@ -1,3 +1,10 @@
+## [2.1.1-beta.1](https://github.com/nugit/actions-pr-changelog/compare/v2.1.0...v2.1.1-beta.1) (2022-08-23)
+
+
+### Bug Fixes
+
+* workflow_run changelog ([08a39a9](https://github.com/nugit/actions-pr-changelog/commit/08a39a903b1718ad40877842bb8ebbd095edca35))
+
 # [2.1.0](https://github.com/nugit/actions-pr-changelog/compare/v2.0.0...v2.1.0) (2022-06-21)
 
 
