@@ -46,7 +46,7 @@
     "eslint-plugin-import": "^2.26.0",
     "flow-bin": "^0.187.1",
     "husky": "^8.0.1",
-    "semantic-release": "^18.0.1",
+    "semantic-release": "^19.0.3",
     "semantic-release-slack-bot": "^3.5.3"
   },
   "dependencies": {
