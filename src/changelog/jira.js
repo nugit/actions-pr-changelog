@@ -7,7 +7,7 @@ function findJiraTicket(prs) {
         const match = line.match(
           /https:\/\/nugitco.atlassian.net\/browse\/(\w+-\w+)/,
         );
-        return [match[1], line];
+        return match ? [match[1], line] : null;
       }),
   );
 
