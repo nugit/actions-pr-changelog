@@ -1,3 +1,11 @@
+## [2.1.1-beta.2](https://github.com/nugit/actions-pr-changelog/compare/v2.1.1-beta.1...v2.1.1-beta.2) (2022-09-20)
+
+
+### Bug Fixes
+
+* fix TypeError when `match` is `null` ([3749dd8](https://github.com/nugit/actions-pr-changelog/commit/3749dd8d32b8b445b4abc21a5c83b3aec42f5be1))
+* update dependencies ([c147e0f](https://github.com/nugit/actions-pr-changelog/commit/c147e0fa8c4ba9e9ee5b09f64cd07ca3f6dfbd76))
+
 ## [2.1.1-beta.1](https://github.com/nugit/actions-pr-changelog/compare/v2.1.0...v2.1.1-beta.1) (2022-08-23)
 
 
