@@ -1,3 +1,10 @@
+## [2.1.1-beta.3](https://github.com/nugit/actions-pr-changelog/compare/v2.1.1-beta.2...v2.1.1-beta.3) (2022-09-21)
+
+
+### Bug Fixes
+
+* fix `TypeError: Iterator value null is not an entry object` ([4d1afbf](https://github.com/nugit/actions-pr-changelog/commit/4d1afbfe298cba256f3e9a98444fe825e908bd19))
+
 ## [2.1.1-beta.2](https://github.com/nugit/actions-pr-changelog/compare/v2.1.1-beta.1...v2.1.1-beta.2) (2022-09-20)
 
 
