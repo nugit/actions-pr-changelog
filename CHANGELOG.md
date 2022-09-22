@@ -1,3 +1,13 @@
+## [2.1.1](https://github.com/nugit/actions-pr-changelog/compare/v2.1.0...v2.1.1) (2022-09-22)
+
+
+### Bug Fixes
+
+* fix `TypeError: Iterator value null is not an entry object` ([4d1afbf](https://github.com/nugit/actions-pr-changelog/commit/4d1afbfe298cba256f3e9a98444fe825e908bd19))
+* fix TypeError when `match` is `null` ([3749dd8](https://github.com/nugit/actions-pr-changelog/commit/3749dd8d32b8b445b4abc21a5c83b3aec42f5be1))
+* update dependencies ([c147e0f](https://github.com/nugit/actions-pr-changelog/commit/c147e0fa8c4ba9e9ee5b09f64cd07ca3f6dfbd76))
+* workflow_run changelog ([08a39a9](https://github.com/nugit/actions-pr-changelog/commit/08a39a903b1718ad40877842bb8ebbd095edca35))
+
 ## [2.1.1-beta.3](https://github.com/nugit/actions-pr-changelog/compare/v2.1.1-beta.2...v2.1.1-beta.3) (2022-09-21)
 
 
