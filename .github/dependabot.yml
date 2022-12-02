@@ -1,7 +1,12 @@
 version: 2
 
+registries:
+  npm-npmjs:
+    type: npm-registry
+    url: https://registry.npmjs.org
+    token: ${{ secrets.NPM_TOKEN }}
+
 updates:
-# root
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
@@ -13,6 +18,8 @@ updates:
     reviewers:
       - team-engineering-x
     target-branch: "develop"
+    registries:
+      - npm-npmjs
     commit-message:
       prefix: "fix:"
       prefix-development: "chore:"
@@ -20,7 +27,6 @@ updates:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
 
-# github actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

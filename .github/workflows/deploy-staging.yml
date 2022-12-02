@@ -3,24 +3,18 @@ name: Deploy Staging
 on:
   push:
     branches:
+      - alpha
       - develop
+  workflow_run:
+    workflows:
+      - "dependabot-check"
+    branches: [dependabot/**]
+    types:
+      - completed
 
 jobs:
-  install: # Runs install once before everything to create & save cache
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2.4.0
-        with:
-          token: ${{ secrets.GH_TOKEN }}
-      - uses: actions/setup-node@v2.5.1
-        with:
-          node-version: '14'
-          cache: 'npm'
-      - run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
-      - run: npm install
-      - name: publish
-        run: npm run deploy
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+  deploy:
+    uses: ./.github/workflows/deploy-client.yml
+    secrets: inherit
+    with:
+      event_name: ${{ github.event_name }}
