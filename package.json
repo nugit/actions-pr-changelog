@@ -25,7 +25,9 @@
   },
   "homepage": "https://github.com/nugit/actions-pr-changelog#readme",
   "engines": {
-    "node": ">=14.17"
+    "node": ">=16.14.0",
+    "yarn": "please-use-npm",
+    "npm": ">= 8.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.5",
