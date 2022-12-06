@@ -27,7 +27,7 @@ const mainConfig = {
     [
       '@semantic-release/exec',
       {
-        prepareCmd: 'yarn build',
+        prepareCmd: 'npm run build',
       },
     ],
     [
