@@ -10,7 +10,7 @@
     "build:createRelease": "ncc build src/actions/createReleaseAction.js -o dist/createRelease --license licenses.txt",
     "build": "npm run build:changelog && npm run build:createRelease",
     "prepack": "npm run build",
-    "lint": "eslint --cache . --ext .js,.jsx,.flow",
+    "lint": "eslint --cache . --ext .js,.jsx",
     "deploy": "semantic-release"
   },
   "repository": {
@@ -25,16 +25,17 @@
   },
   "homepage": "https://github.com/nugit/actions-pr-changelog#readme",
   "engines": {
-    "node": ">=14.17"
+    "node": ">=16.14.0",
+    "yarn": "please-use-npm",
+    "npm": ">= 8.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.19.1",
+    "@babel/core": "^7.20.5",
     "@babel/eslint-parser": "^7.19.1",
-    "@babel/preset-env": "^7.19.1",
-    "@babel/preset-flow": "^7.18.6",
-    "@commitlint/cli": "^17.1.2",
-    "@commitlint/config-conventional": "^17.1.0",
-    "@semantic-release/changelog": "^6.0.1",
+    "@babel/preset-env": "^7.20.2",
+    "@commitlint/cli": "^17.3.0",
+    "@commitlint/config-conventional": "^17.3.0",
+    "@semantic-release/changelog": "^6.0.2",
     "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "@vercel/ncc": "^0.34.0",
@@ -44,14 +45,13 @@
     "eslint-plugin-fb-flow": "^0.0.4",
     "eslint-plugin-flowtype": "^6.1.1",
     "eslint-plugin-import": "^2.26.0",
-    "flow-bin": "^0.187.1",
-    "husky": "^8.0.1",
-    "semantic-release": "^18.0.1",
+    "husky": "^8.0.2",
+    "semantic-release": "^19.0.5",
     "semantic-release-slack-bot": "^3.5.3"
   },
   "dependencies": {
-    "@actions/core": "^1.9.1",
-    "@actions/github": "^5.0.3",
-    "dotenv": "^16.0.2"
+    "@actions/core": "^1.10.0",
+    "@actions/github": "^5.1.1",
+    "dotenv": "^16.0.3"
   }
 }

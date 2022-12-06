@@ -10,7 +10,7 @@ jobs:
     needs: deploy
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v3
       - name: Merge master -> develop
         uses: devmasx/merge-branch@1.4.0
         with:
@@ -18,21 +18,8 @@ jobs:
           from_branch: master
           target_branch: develop
           github_token: ${{ secrets.GH_TOKEN }}
-  deploy: # Runs install once before everything to create & save cache
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2.4.0
-        with:
-          token: ${{ secrets.GH_TOKEN }}
-      - uses: actions/setup-node@v2.5.1
-        with:
-          node-version: '14'
-          cache: 'npm'
-      - run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
-      - run: npm install
-      - name: publish
-        run: npm run deploy
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+  deploy:
+    uses: ./.github/workflows/deploy-client.yml
+    secrets: inherit
+    with:
+      event_name: ${{ github.event_name }}

@@ -8,26 +8,22 @@ on:
     branches:
       - "master"
       - "develop"
+      - "hotfix/**"
+      - "release/**"
   pull_request:
+    branches-ignore:
+      - "master"
+  workflow_run:
+    workflows:
+      - "dependabot-check"
+    branches: [dependabot/**]
+    types:
+      - completed
 
 jobs:
   check:
-    runs-on: ubuntu-latest
-    steps:
-      - if: ${{ github.actor == 'dependabot[bot]' }}
-        run: echo "Skipping - Will be tested in dependabot-merge"
-      - uses: actions/checkout@v2.4.0
-        if: ${{ github.actor != 'dependabot[bot]' }}
-      - uses: actions/setup-node@v2.5.1
-        if: ${{ github.actor != 'dependabot[bot]' }}
-        with:
-          node-version: '14'
-          cache: 'npm'
-      - run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
-        if: ${{ github.actor != 'dependabot[bot]' }}
-      - run: npm install
-        if: ${{ github.actor != 'dependabot[bot]' }}
-      - run: npm run lint
-        if: ${{ github.actor != 'dependabot[bot]' }}
-      - run: npm run build
-        if: ${{ github.actor != 'dependabot[bot]' }}
+    uses: ./.github/workflows/test.yml
+    secrets: inherit
+    with:
+      skip: ${{ github.actor == 'dependabot[bot]' && github.event_name == 'workflow_run' }}
+      event_name: ${{ github.event_name }}
