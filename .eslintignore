@@ -50,8 +50,5 @@ yarn.lock
 # build output
 dist
 
-# FlowTyped definitions
-flow-typed
-
 # Changes in dist are ignored; but it will still be updated by semantic-release
 ./dist

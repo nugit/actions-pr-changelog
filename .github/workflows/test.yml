@@ -1,0 +1,40 @@
+name: Test
+
+on:
+  workflow_call:
+    inputs:
+      skip:
+        required: true
+        type: boolean
+      event_name:
+        required: true
+        type: string
+    secrets:
+      NPM_TOKEN:
+        required: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - if: ${{ inputs.event_name == 'workflow_run' }}
+        uses: nugit/action-workflow_run-status@v1.1.0-beta.2
+        with:
+          job_id: 'check-check'
+      - if: ${{ inputs.skip }}
+        run: echo "Skipping"
+      - if: ${{ ! inputs.skip }}
+        uses: actions/checkout@v3
+      - if: ${{ ! inputs.skip }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'npm'
+      - if: ${{ ! inputs.skip }}
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
+      - if: ${{ ! inputs.skip }}
+        run: npm ci
+      - if: ${{ ! inputs.skip }}
+        run: npm run build
+      - if: ${{ ! inputs.skip }}
+        run: npm run lint
