@@ -1,3 +1,28 @@
+# [3.0.0](https://github.com/nugit/actions-pr-changelog/compare/v2.1.1...v3.0.0) (2022-12-12)
+
+
+### Bug Fixes
+
+* fix command ([75f9a97](https://github.com/nugit/actions-pr-changelog/commit/75f9a974bcbde6542a8f8edabf3e13937ad8b3a1))
+* fix vulnerabilities ([04634ba](https://github.com/nugit/actions-pr-changelog/commit/04634bab4b888bfc2279feb1c8264dbf7b3df4c4))
+
+
+* feat!: update node version ([797bd44](https://github.com/nugit/actions-pr-changelog/commit/797bd44aac62ae42d1f5d1a47bc453854d1898d0))
+* feat!: update node version ([2681884](https://github.com/nugit/actions-pr-changelog/commit/2681884735a19be1f290dee2fb2d354ef8ec062c))
+
+
+### Features
+
+* remove unused flow dependency ([5ddb75d](https://github.com/nugit/actions-pr-changelog/commit/5ddb75debe607bd23b08c70991bd840a63cb37af))
+* update package-lock.json ([3f0675d](https://github.com/nugit/actions-pr-changelog/commit/3f0675d432c815d26da95e62576e9d206f837f71))
+* upgrade minor dependencies ([245c03b](https://github.com/nugit/actions-pr-changelog/commit/245c03b2cf82b09b696fb20e64ef42800df43cfd))
+
+
+### BREAKING CHANGES
+
+* minimum NodeJS version is 16.14
+* minimum NodeJS version is 16.14
+
 # [3.0.0-beta.1](https://github.com/nugit/actions-pr-changelog/compare/v2.1.1...v3.0.0-beta.1) (2022-12-06)
 
 
