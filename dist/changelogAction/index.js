@@ -9729,21 +9729,23 @@ module.exports = {
 function findJiraTicket(prs) {
   const lines = prs.flatMap(pr => (pr.body ? pr.body.split('\n') : []));
 
-  const linesMap = new Map(
-    lines
-      .filter(line => line.includes('atlassian.net'))
-      .reduce((acc, line) => {
-        const match = line.match(
-          /https:\/\/nugitco.atlassian.net\/browse\/(\w+-\w+)/,
-        );
+  const linesMap = lines
+    .filter(line => line.includes('atlassian.net'))
+    .reduce((acc, line) => {
+      const match = line.match(
+        /https:\/\/nugitco.atlassian.net\/browse\/(\w+-\w+)/,
+      );
 
-        if (match) {
-          acc.push([match[1], line]);
+      if (match) {
+        const jiraTicketNo = match[1];
+
+        if (!acc.has(jiraTicketNo)) {
+          acc.set(jiraTicketNo, line);
         }
+      }
 
-        return acc;
-      }, []),
-  );
+      return acc;
+    }, new Map());
 
   return Array.from(linesMap.values());
 }
