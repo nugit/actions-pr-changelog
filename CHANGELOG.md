@@ -1,3 +1,10 @@
+## [3.0.1](https://github.com/nugit/actions-pr-changelog/compare/v3.0.0...v3.0.1) (2023-01-05)
+
+
+### Bug Fixes
+
+* fix show user input instead of jira bot input ([83216f3](https://github.com/nugit/actions-pr-changelog/commit/83216f3bd3aab7ad843f899b6dda27b98e49517d))
+
 ## [3.0.1-beta.1](https://github.com/nugit/actions-pr-changelog/compare/v3.0.0...v3.0.1-beta.1) (2023-01-05)
 
 
