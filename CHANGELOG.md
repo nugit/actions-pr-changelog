@@ -1,3 +1,12 @@
+## [3.0.2](https://github.com/nugit/actions-pr-changelog/compare/v3.0.1...v3.0.2) (2023-07-12)
+
+
+### Bug Fixes
+
+* bump dotenv from 16.0.3 to 16.1.4 ([d80a4ec](https://github.com/nugit/actions-pr-changelog/commit/d80a4ecaca567d1f8103b5b784a1eca4d943aa24))
+* bump dotenv from 16.1.4 to 16.3.1 ([e5b3192](https://github.com/nugit/actions-pr-changelog/commit/e5b31923fbdb09a3fc35a627b3789cbeb4457032))
+* fix security vulnerabilities ([bdb525d](https://github.com/nugit/actions-pr-changelog/commit/bdb525d12608c1fa151a4d5ed75f159d0a3ae197))
+
 ## [3.0.2-beta.1](https://github.com/nugit/actions-pr-changelog/compare/v3.0.1...v3.0.2-beta.1) (2023-07-12)
 
 
