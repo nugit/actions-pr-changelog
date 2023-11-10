@@ -1,3 +1,10 @@
+## [3.0.3-beta.1](https://github.com/nugit/actions-pr-changelog/compare/v3.0.2...v3.0.3-beta.1) (2023-11-10)
+
+
+### Bug Fixes
+
+* bump @actions/core from 1.10.0 to 1.10.1 ([4b6997e](https://github.com/nugit/actions-pr-changelog/commit/4b6997e70158609e485917c1fefd6fa6ce3455b1))
+
 ## [3.0.2](https://github.com/nugit/actions-pr-changelog/compare/v3.0.1...v3.0.2) (2023-07-12)
 
 
