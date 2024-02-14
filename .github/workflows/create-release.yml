@@ -19,11 +19,11 @@ jobs:
         if: ${{ github.event_name == 'workflow_run' }}
         with:
           job_id: 'release'
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: './createReleaseAction'
         with:
           token: ${{ secrets.GH_TOKEN }}
           head: develop
           base: master
           title: Next Release
-          reviewers: 'moroine,limtingzhi'
+          reviewers: 'limtingzhi'

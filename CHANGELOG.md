@@ -1,3 +1,24 @@
+# [3.1.0-beta.1](https://github.com/nugit/actions-pr-changelog/compare/v3.0.3-beta.1...v3.1.0-beta.1) (2024-02-14)
+
+
+### Bug Fixes
+
+* bump dotenv from 16.3.1 to 16.3.2 ([be670d1](https://github.com/nugit/actions-pr-changelog/commit/be670d12d4713678676197b7b1af16ce542fb456))
+* bump dotenv from 16.3.2 to 16.4.1 ([45b3247](https://github.com/nugit/actions-pr-changelog/commit/45b3247b7a7b4000372f72dc0087635fc2b506d2))
+* bump dotenv from 16.4.1 to 16.4.3 ([836a34e](https://github.com/nugit/actions-pr-changelog/commit/836a34eab49a7f1d1b4b6071a677666ed2275866))
+
+
+### Features
+
+* update minor dependencies ([3d80fe5](https://github.com/nugit/actions-pr-changelog/commit/3d80fe56d7368ac4ab1d02af3b6c35a79616ebfb))
+
+## [3.0.3-beta.1](https://github.com/nugit/actions-pr-changelog/compare/v3.0.2...v3.0.3-beta.1) (2023-11-10)
+
+
+### Bug Fixes
+
+* bump @actions/core from 1.10.0 to 1.10.1 ([4b6997e](https://github.com/nugit/actions-pr-changelog/commit/4b6997e70158609e485917c1fefd6fa6ce3455b1))
+
 ## [3.0.2](https://github.com/nugit/actions-pr-changelog/compare/v3.0.1...v3.0.2) (2023-07-12)
 
 
