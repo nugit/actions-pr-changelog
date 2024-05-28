@@ -1,3 +1,26 @@
+# [4.0.0](https://github.com/nugit/actions-pr-changelog/compare/v3.1.0...v4.0.0) (2024-05-28)
+
+
+### Bug Fixes
+
+* bump dotenv from 16.4.4 to 16.4.5 ([21ba223](https://github.com/nugit/actions-pr-changelog/commit/21ba223ea03743385e95f507359d22c72703bf39))
+* remove unused dependency ([2a4949f](https://github.com/nugit/actions-pr-changelog/commit/2a4949f8a4902dd2ca20122e1ca0bcc9a65ce697))
+
+
+### Features
+
+* update [@commitlint](https://github.com/commitlint) dependencies ([1aa18fd](https://github.com/nugit/actions-pr-changelog/commit/1aa18fd0d4184ef51db9f8ed3b2853cf4113b010))
+* update @actions/github ([30c034d](https://github.com/nugit/actions-pr-changelog/commit/30c034db953ace34d74254584c2ba3f92d811bfe))
+* update eslint dependencies ([5728fee](https://github.com/nugit/actions-pr-changelog/commit/5728feedba51f257b7b4dee5e0adfe213dca3489))
+* update husky ([263b9d9](https://github.com/nugit/actions-pr-changelog/commit/263b9d93adf7b977ad0481afc21740156882649a))
+* update semantic-release dependencies ([0b21065](https://github.com/nugit/actions-pr-changelog/commit/0b2106523dbc9a66fbe5a28ee8bb673dc604f55b))
+* upgrade minimum NodeJS version to 20.13 ([c467d91](https://github.com/nugit/actions-pr-changelog/commit/c467d91aab32160e5289c81cf3ae3360f874cdf8))
+
+
+### BREAKING CHANGES
+
+* minimum NodeJS version is 20.13
+
 # [4.0.0-beta.1](https://github.com/nugit/actions-pr-changelog/compare/v3.1.0...v4.0.0-beta.1) (2024-05-28)
 
 
