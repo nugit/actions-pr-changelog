@@ -39,12 +39,7 @@
     "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "@vercel/ncc": "^0.38.1",
-    "eslint": "^7.32.0",
-    "eslint-config-nugit": "^2.0.3",
-    "eslint-plugin-eslint-comments": "^3.2.0",
-    "eslint-plugin-fb-flow": "^0.0.4",
-    "eslint-plugin-flowtype": "^6.1.1",
-    "eslint-plugin-import": "^2.29.1",
+    "eslint-config-nugit": "^4.0.0",
     "husky": "^9.0.11",
     "semantic-release": "^23.1.1",
     "semantic-release-slack-bot": "^4.0.2"
