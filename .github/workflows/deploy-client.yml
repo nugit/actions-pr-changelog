@@ -2,10 +2,6 @@ name: Deploy
 
 on:
   workflow_call:
-    inputs:
-      event_name:
-        required: true
-        type: string
     secrets:
       GH_TOKEN:
         required: true
@@ -18,10 +14,6 @@ jobs:
   install:
     runs-on: ubuntu-latest
     steps:
-      - if: ${{ inputs.event_name == 'workflow_run' }}
-        uses: nugit/action-workflow_run-status@v1.1.0-beta.2
-        with:
-          job_id: 'deploy-install'
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GH_TOKEN }}

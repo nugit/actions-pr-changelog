@@ -1,27 +1,23 @@
-name: dependabot-check
+name: dependabot
 
 on:
   pull_request:
-    branches:
-      - 'develop'
 
 jobs:
-  check:
-    if: ${{ github.actor == 'dependabot[bot]' }}
-    uses: ./.github/workflows/test.yml
-    secrets: inherit
-    with:
-      skip: false
-      event_name: ${{ github.event_name }}
   auto-merge:
     runs-on: ubuntu-latest
-    needs: check
-    permissions:
-      pull-requests: write
-      contents: write
     steps:
       - uses: fastify/github-action-merge-dependabot@v3
         with:
           target: minor
           merge-method: merge
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          use-github-auto-merge: true
+          github-token: ${{ secrets.GH_TOKEN }}
+  auto-approve:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    needs: auto-merge
+    if: contains(github.head_ref, 'dependabot')
+    steps:
+      - uses: hmarr/auto-approve-action@v4
