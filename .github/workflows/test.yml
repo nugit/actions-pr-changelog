@@ -22,7 +22,7 @@ jobs:
         with:
           job_id: 'check-check'
       - if: ${{ inputs.skip }}
-        run: echo "Skipping"
+        run: echo 'Skipping'
       - if: ${{ ! inputs.skip }}
         uses: actions/checkout@v4
       - if: ${{ ! inputs.skip }}
@@ -31,7 +31,7 @@ jobs:
           node-version: '20'
           cache: 'npm'
       - if: ${{ ! inputs.skip }}
-        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
+        run: echo '//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}' > .npmrc
       - if: ${{ ! inputs.skip }}
         run: npm ci
       - if: ${{ ! inputs.skip }}

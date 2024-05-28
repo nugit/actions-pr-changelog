@@ -3,7 +3,7 @@ name: dependabot-check
 on:
   pull_request:
     branches:
-      - "develop"
+      - 'develop'
 
 jobs:
   check:

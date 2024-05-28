@@ -7,7 +7,7 @@ on:
       - develop
   workflow_run:
     workflows:
-      - "dependabot-check"
+      - 'dependabot-check'
     branches: [dependabot/**]
     types:
       - completed
