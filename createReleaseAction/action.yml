@@ -17,5 +17,5 @@ inputs:
     description: 'Comma separated list of reviewers'
     required: true
 runs:
-  using: 'node16'
+  using: 'node20'
   main: '../dist/createRelease/index.js'

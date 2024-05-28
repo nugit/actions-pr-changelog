@@ -5,25 +5,8 @@ name: Check
 
 on:
   push:
-    branches:
-      - "master"
-      - "develop"
-      - "hotfix/**"
-      - "release/**"
-  pull_request:
-    branches-ignore:
-      - "master"
-  workflow_run:
-    workflows:
-      - "dependabot-check"
-    branches: [dependabot/**]
-    types:
-      - completed
 
 jobs:
   check:
     uses: ./.github/workflows/test.yml
     secrets: inherit
-    with:
-      skip: ${{ github.actor == 'dependabot[bot]' && github.event_name == 'workflow_run' }}
-      event_name: ${{ github.event_name }}

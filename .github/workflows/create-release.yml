@@ -3,22 +3,12 @@ name: Create Release
 on:
   push:
     branches:
-      - "develop"
-  workflow_run:
-    workflows:
-      - "dependabot-check"
-    branches: [dependabot/**]
-    types:
-      - completed
+      - 'develop'
 
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: nugit/action-workflow_run-status@v1.1.0-beta.2
-        if: ${{ github.event_name == 'workflow_run' }}
-        with:
-          job_id: 'release'
       - uses: actions/checkout@v4
       - uses: './createReleaseAction'
         with:
