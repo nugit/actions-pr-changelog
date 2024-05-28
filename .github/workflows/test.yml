@@ -2,13 +2,6 @@ name: Test
 
 on:
   workflow_call:
-    inputs:
-      skip:
-        required: true
-        type: boolean
-      event_name:
-        required: true
-        type: string
     secrets:
       NPM_TOKEN:
         required: true
@@ -16,25 +9,16 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      statuses: write
     steps:
-      - if: ${{ inputs.event_name == 'workflow_run' }}
-        uses: nugit/action-workflow_run-status@v1.1.0-beta.2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          job_id: 'check-check'
-      - if: ${{ inputs.skip }}
-        run: echo "Skipping"
-      - if: ${{ ! inputs.skip }}
-        uses: actions/checkout@v4
-      - if: ${{ ! inputs.skip }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: '16'
+          node-version: '20'
           cache: 'npm'
-      - if: ${{ ! inputs.skip }}
-        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
-      - if: ${{ ! inputs.skip }}
-        run: npm ci
-      - if: ${{ ! inputs.skip }}
-        run: npm run build
-      - if: ${{ ! inputs.skip }}
-        run: npm run lint
+      - run: echo '//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}' > .npmrc
+      - run: npm ci
+      - run: npm run build
+      - run: npm run lint

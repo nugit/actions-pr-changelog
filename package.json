@@ -1,11 +1,11 @@
 {
   "name": "actions-pr-changelog",
-  "version": "3.1.0",
+  "version": "4.0.0-beta.1",
   "description": "actions-pr-changelog",
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepare": "husky install $PWD/.husky",
+    "prepare": "husky $PWD/.husky",
     "build:changelog": "ncc build src/actions/changelogAction.js -o dist/changelogAction --license licenses.txt",
     "build:createRelease": "ncc build src/actions/createReleaseAction.js -o dist/createRelease --license licenses.txt",
     "build": "npm run build:changelog && npm run build:createRelease",
@@ -25,33 +25,27 @@
   },
   "homepage": "https://github.com/nugit/actions-pr-changelog#readme",
   "engines": {
-    "node": ">=16.14.0",
+    "node": ">=20.13.0",
     "yarn": "please-use-npm",
-    "npm": ">= 8.0.0"
+    "npm": ">=10.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.23.9",
-    "@babel/eslint-parser": "^7.23.10",
-    "@babel/preset-env": "^7.23.9",
-    "@commitlint/cli": "^17.8.1",
-    "@commitlint/config-conventional": "^17.8.1",
+    "@babel/core": "^7.24.6",
+    "@babel/eslint-parser": "^7.24.6",
+    "@commitlint/cli": "^19.3.0",
+    "@commitlint/config-conventional": "^19.2.2",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "@vercel/ncc": "^0.38.1",
-    "eslint": "^7.32.0",
-    "eslint-config-nugit": "^2.0.3",
-    "eslint-plugin-eslint-comments": "^3.2.0",
-    "eslint-plugin-fb-flow": "^0.0.4",
-    "eslint-plugin-flowtype": "^6.1.1",
-    "eslint-plugin-import": "^2.29.1",
-    "husky": "^8.0.3",
-    "semantic-release": "^19.0.5",
-    "semantic-release-slack-bot": "^3.5.3"
+    "eslint-config-nugit": "^4.0.0",
+    "husky": "^9.0.11",
+    "semantic-release": "^23.1.1",
+    "semantic-release-slack-bot": "^4.0.2"
   },
   "dependencies": {
     "@actions/core": "^1.10.1",
-    "@actions/github": "^5.1.1",
-    "dotenv": "^16.4.4"
+    "@actions/github": "^6.0.0",
+    "dotenv": "^16.4.5"
   }
 }

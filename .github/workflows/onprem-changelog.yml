@@ -1,0 +1,17 @@
+name: OnPrem Changelog
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+    branches: [onprem-master]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: './.'
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          type: onprem
+          base: onprem-master
