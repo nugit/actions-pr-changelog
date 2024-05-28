@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepare": "husky install $PWD/.husky",
+    "prepare": "husky $PWD/.husky",
     "build:changelog": "ncc build src/actions/changelogAction.js -o dist/changelogAction --license licenses.txt",
     "build:createRelease": "ncc build src/actions/createReleaseAction.js -o dist/createRelease --license licenses.txt",
     "build": "npm run build:changelog && npm run build:createRelease",
@@ -45,7 +45,7 @@
     "eslint-plugin-fb-flow": "^0.0.4",
     "eslint-plugin-flowtype": "^6.1.1",
     "eslint-plugin-import": "^2.29.1",
-    "husky": "^8.0.3",
+    "husky": "^9.0.11",
     "semantic-release": "^19.0.5",
     "semantic-release-slack-bot": "^3.5.3"
   },
