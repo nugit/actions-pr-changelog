@@ -1,3 +1,10 @@
+## [4.0.1-beta.1](https://github.com/nugit/actions-pr-changelog/compare/v4.0.0...v4.0.1-beta.1) (2024-10-07)
+
+
+### Bug Fixes
+
+* bump @actions/core from 1.10.1 to 1.11.1 ([9304920](https://github.com/nugit/actions-pr-changelog/commit/93049204d2e18a87a7bfda6113ef2d458f804441))
+
 # [4.0.0](https://github.com/nugit/actions-pr-changelog/compare/v3.1.0...v4.0.0) (2024-05-28)
 
 
