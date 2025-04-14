@@ -1,3 +1,10 @@
+## [4.0.1-beta.3](https://github.com/nugit/actions-pr-changelog/compare/v4.0.1-beta.2...v4.0.1-beta.3) (2025-04-14)
+
+
+### Bug Fixes
+
+* bump dotenv from 16.4.7 to 16.5.0 ([b2f8903](https://github.com/nugit/actions-pr-changelog/commit/b2f8903b21c69ba9831d21461b0af6ae534702e9))
+
 ## [4.0.1-beta.2](https://github.com/nugit/actions-pr-changelog/compare/v4.0.1-beta.1...v4.0.1-beta.2) (2024-12-09)
 
 
