@@ -1,3 +1,10 @@
+## [4.0.1-beta.4](https://github.com/nugit/actions-pr-changelog/compare/v4.0.1-beta.3...v4.0.1-beta.4) (2025-05-12)
+
+
+### Bug Fixes
+
+* bump @actions/github from 6.0.0 to 6.0.1 ([c537722](https://github.com/nugit/actions-pr-changelog/commit/c537722c3f47ee3d727e191ce7bc071a87415e82))
+
 ## [4.0.1-beta.3](https://github.com/nugit/actions-pr-changelog/compare/v4.0.1-beta.2...v4.0.1-beta.3) (2025-04-14)
 
 
