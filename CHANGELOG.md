@@ -1,3 +1,38 @@
+## [4.0.1-beta.5](https://github.com/nugit/actions-pr-changelog/compare/v4.0.1-beta.4...v4.0.1-beta.5) (2025-07-08)
+
+
+### Bug Fixes
+
+* bump dotenv from 16.5.0 to 16.6.1 ([424e636](https://github.com/nugit/actions-pr-changelog/commit/424e636c63ed9fabcaf6e63fecdc5711a351185d))
+
+## [4.0.1-beta.4](https://github.com/nugit/actions-pr-changelog/compare/v4.0.1-beta.3...v4.0.1-beta.4) (2025-05-12)
+
+
+### Bug Fixes
+
+* bump @actions/github from 6.0.0 to 6.0.1 ([c537722](https://github.com/nugit/actions-pr-changelog/commit/c537722c3f47ee3d727e191ce7bc071a87415e82))
+
+## [4.0.1-beta.3](https://github.com/nugit/actions-pr-changelog/compare/v4.0.1-beta.2...v4.0.1-beta.3) (2025-04-14)
+
+
+### Bug Fixes
+
+* bump dotenv from 16.4.7 to 16.5.0 ([b2f8903](https://github.com/nugit/actions-pr-changelog/commit/b2f8903b21c69ba9831d21461b0af6ae534702e9))
+
+## [4.0.1-beta.2](https://github.com/nugit/actions-pr-changelog/compare/v4.0.1-beta.1...v4.0.1-beta.2) (2024-12-09)
+
+
+### Bug Fixes
+
+* bump dotenv from 16.4.5 to 16.4.7 ([fcdf467](https://github.com/nugit/actions-pr-changelog/commit/fcdf46767e41ecab652e40d5c91162ff01675667))
+
+## [4.0.1-beta.1](https://github.com/nugit/actions-pr-changelog/compare/v4.0.0...v4.0.1-beta.1) (2024-10-07)
+
+
+### Bug Fixes
+
+* bump @actions/core from 1.10.1 to 1.11.1 ([9304920](https://github.com/nugit/actions-pr-changelog/commit/93049204d2e18a87a7bfda6113ef2d458f804441))
+
 # [4.0.0](https://github.com/nugit/actions-pr-changelog/compare/v3.1.0...v4.0.0) (2024-05-28)
 
 
